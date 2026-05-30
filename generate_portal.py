@@ -71,6 +71,12 @@ def main():
             else:
                 category = 'Core Guides'
 
+            # Subcategory extraction
+            subcategory = None
+            if len(parts) > 2:
+                sub_raw = parts[1]
+                subcategory = sub_raw.replace('_', ' ').replace('-', ' ').title()
+
             with open(abs_path, 'r', encoding='utf-8') as f:
                 content = f.read()
 
@@ -86,6 +92,7 @@ def main():
             docs_list.append({
                 'id': doc_id,
                 'category': category,
+                'subcategory': subcategory,
                 'title': title,
                 'path': rel_path.replace('\\', '/'),
                 'content': content
@@ -362,6 +369,64 @@ def get_html_template(docs, path_map):
 
     .nav-item-btn.active .nav-icon {{
       color: var(--accent);
+    }}
+
+    /* Subcategory Hierarchical Tree Styling */
+    .subcategory-wrapper {{
+      margin-bottom: 2px;
+    }}
+    
+    .nav-subcat-btn {{
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text-body);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+    }}
+    
+    .nav-subcat-btn:hover {{
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+    }}
+    
+    .subcat-list {{
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 2px;
+      margin-bottom: 6px;
+    }}
+    
+    .nav-item-btn.indent {{
+      padding-left: 28px;
+      font-size: 13px;
+    }}
+    
+    .subcat-count {{
+      font-size: 10px;
+      background-color: var(--border-color);
+      color: var(--text-secondary);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+    }}
+    
+    .nav-text {{
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex-grow: 1;
     }}
 
     /* Main Area Styling */
@@ -1062,12 +1127,45 @@ def get_html_template(docs, path_map):
       }});
     }}
 
+    // Helper to resolve relative path strings (e.g. docs/00-overview.md + ../Agentic_SDLC_Master_Map.md -> Agentic_SDLC_Master_Map.md)
+    function resolveRelativePath(basePath, relativePath) {{
+      if (relativePath.startsWith('http') || relativePath.startsWith('#')) {{
+        return relativePath;
+      }}
+      
+      const baseParts = basePath.split('/');
+      baseParts.pop(); // remove filename
+      
+      const relParts = relativePath.split('/');
+      
+      for (const part of relParts) {{
+        if (part === '.') {{
+          continue;
+        }} else if (part === '..') {{
+          if (baseParts.length > 0) baseParts.pop();
+        }} else {{
+          baseParts.push(part);
+        }}
+      }}
+      
+      return baseParts.join('/');
+    }}
+
     // Path normalization helper for links
     function resolveDocId(href) {{
+      const currentDoc = docs.find(d => d.id === currentDocId);
+      if (!currentDoc) return null;
+      
+      const resolvedPath = resolveRelativePath(currentDoc.path, href);
+      if (pathMap[resolvedPath]) {{
+        return pathMap[resolvedPath];
+      }}
+      
       let cleanPath = href.replace(/^(\\.\\.\\/|\\.\\/)+/, '');
       if (pathMap[cleanPath]) {{
         return pathMap[cleanPath];
       }}
+      
       // Fallback: match by basename
       const base = cleanPath.split('/').pop();
       if (pathMap[base]) {{
@@ -1117,14 +1215,43 @@ def get_html_template(docs, path_map):
       }});
     }}
 
-    // Build sidebar navigation dynamically
+    // Toggle subcategory fold open/close
+    function toggleSubcategory(subcatId) {{
+      const list = document.getElementById(`list-${{subcatId}}`);
+      const arrow = document.getElementById(`arrow-${{subcatId}}`);
+      if (list.style.display === 'none') {{
+        list.style.display = 'block';
+        arrow.style.transform = 'rotate(90deg)';
+      }} else {{
+        list.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+      }}
+    }}
+
+    // Expand subcategory of a document
+    function expandSubcategoryOfDoc(docId) {{
+      const doc = docs.find(d => d.id === docId);
+      if (doc && doc.subcategory) {{
+        const subcatId = `${{doc.category.toLowerCase().replace(/ /g, '-')}}-${{doc.subcategory.toLowerCase().replace(/ /g, '-')}}`;
+        const list = document.getElementById(`list-${{subcatId}}`);
+        const arrow = document.getElementById(`arrow-${{subcatId}}`);
+        if (list && list.style.display === 'none') {{
+          list.style.display = 'block';
+          arrow.style.transform = 'rotate(90deg)';
+        }}
+      }}
+    }}
+
+    // Build sidebar navigation dynamically with tree hierarchy
     function renderSidebar() {{
-      const categories = [...new Set(docs.map(doc => doc.category))];
+      const categories = ['Core Guides', 'Detailed Chapters', 'Verification Checklists', 'Operational Templates', 'Practical Examples'];
       let navHtml = "";
       
       categories.forEach(category => {{
         const categoryDocs = docs.filter(doc => doc.category === category);
-        const iconName = categoryIcons[category] || 'file';
+        if (categoryDocs.length === 0) return;
+        
+        const iconName = categoryIcons[category] || 'folder';
         
         navHtml += `
           <div class="nav-category">
@@ -1135,16 +1262,67 @@ def get_html_template(docs, path_map):
             <ul class="nav-list">
         `;
         
+        // Group category docs by subcategory
+        const subcategories = {{}};
+        const flatDocs = [];
+        
         categoryDocs.forEach(doc => {{
+          if (doc.subcategory) {{
+            if (!subcategories[doc.subcategory]) {{
+              subcategories[doc.subcategory] = [];
+            }}
+            subcategories[doc.subcategory].push(doc);
+          }} else {{
+            flatDocs.push(doc);
+          }}
+        }});
+        
+        // Render flat docs (no subfolder)
+        flatDocs.forEach(doc => {{
           navHtml += `
             <li>
               <button class="nav-item-btn" data-id="${{doc.id}}" onclick="navigateTo('${{doc.id}}')">
-                <i data-lucide="file-text" class="nav-icon" style="width: 15px; height: 15px; flex-shrink: 0;"></i>
-                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${{doc.title}}</span>
+                <i data-lucide="file-text" class="nav-icon" style="width: 14px; height: 14px; flex-shrink: 0;"></i>
+                <span class="nav-text" title="${{doc.title}}">${{doc.title}}</span>
               </button>
             </li>
           `;
         }});
+        
+        // Render nested folders (subcategories)
+        for (const subcat in subcategories) {{
+          const subcatDocs = subcategories[subcat];
+          const subcatId = `${{category.toLowerCase().replace(/ /g, '-')}}-${{subcat.toLowerCase().replace(/ /g, '-')}}`;
+          
+          navHtml += `
+            <li class="subcategory-wrapper">
+              <button class="nav-subcat-btn" onclick="toggleSubcategory('${{subcatId}}')">
+                <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+                  <i data-lucide="chevron-right" class="subcat-arrow" id="arrow-${{subcatId}}" style="width: 14px; height: 14px; transition: transform 0.2s; flex-shrink: 0;"></i>
+                  <i data-lucide="folder" class="subcat-icon" style="width: 14px; height: 14px; color: var(--text-secondary); flex-shrink: 0;"></i>
+                  <span class="nav-text" style="font-weight: 600; font-size: 12.5px;">${{subcat.toUpperCase()}}</span>
+                </div>
+                <span class="subcat-count">${{subcatDocs.length}}</span>
+              </button>
+              <ul class="subcat-list" id="list-${{subcatId}}" style="display: none;">
+          `;
+          
+          subcatDocs.forEach(doc => {{
+            navHtml += `
+              <li>
+                <button class="nav-item-btn indent" data-id="${{doc.id}}" onclick="navigateTo('${{doc.id}}')">
+                  <i data-lucide="file-text" class="nav-icon" style="width: 13px; height: 13px; flex-shrink: 0;"></i>
+                  <span class="nav-text" title="${{doc.title}}">${{doc.title}}</span>
+                </button>
+              </li>
+            `;
+          }});
+          
+          navHtml += `
+              </ul>
+            </li>
+          `;
+        }}
         
         navHtml += `
             </ul>
@@ -1154,6 +1332,10 @@ def get_html_template(docs, path_map):
       
       sidebarNav.innerHTML = navHtml;
       lucide.createIcons();
+      
+      if (currentDocId) {{
+        expandSubcategoryOfDoc(currentDocId);
+      }}
     }}
 
     // Handle Article Selection
@@ -1168,6 +1350,7 @@ def get_html_template(docs, path_map):
       document.querySelectorAll('.nav-item-btn').forEach(btn => {{
         btn.classList.toggle('active', btn.getAttribute('data-id') === id);
       }});
+      expandSubcategoryOfDoc(id);
 
       // Update Breadcrumbs
       breadcrumbs.innerHTML = `
