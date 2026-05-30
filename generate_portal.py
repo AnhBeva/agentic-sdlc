@@ -1179,6 +1179,16 @@ def get_html_template(docs, path_map):
       return str.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
     }}
 
+    // GitHub-compatible unicode-aware heading slugify generator
+    function githubSlugify(text, fallbackIdx) {{
+      const slug = text.toLowerCase()
+        .trim()
+        .replace(/[^\p{{L}}\p{{N}}\-_ ]/gu, '')
+        .replace(/\s+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      return slug || `heading-${{fallbackIdx}}`;
+    }}
+
     // Custom Alert Parser
     function parseAlerts(html) {{
       const alertClasses = {{
@@ -1339,7 +1349,7 @@ def get_html_template(docs, path_map):
     }}
 
     // Handle Article Selection
-    async function loadDocument(id) {{
+    async function loadDocument(id, anchor) {{
       const doc = docs.find(d => d.id === id);
       if (!doc) return;
       
@@ -1393,20 +1403,38 @@ def get_html_template(docs, path_map):
       // Intercept and resolve cross links inside documentContent
       documentContent.querySelectorAll('a').forEach(a => {{
         const href = a.getAttribute('href');
-        if (href && !href.startsWith('http') && !href.startsWith('#') && href.endsWith('.md')) {{
-          const resolved = resolveDocId(href);
-          if (resolved) {{
-            a.setAttribute('href', `#${{resolved}}`);
-            a.onclick = function(e) {{
-              e.preventDefault();
-              navigateTo(resolved);
-            }};
+        if (href && !href.startsWith('http') && !href.startsWith('#')) {{
+          const mdLinkRegex = /^([^?#]+\.md)(?:#([^#]+))?$/;
+          const match = href.match(mdLinkRegex);
+          if (match) {{
+            const filePath = match[1];
+            const linkAnchor = match[2] || '';
+            const resolved = resolveDocId(filePath);
+            if (resolved) {{
+              const hashNav = `${{resolved}}` + (linkAnchor ? `:${{linkAnchor}}` : '');
+              a.setAttribute('href', `#${{hashNav}}`);
+              a.onclick = function(e) {{
+                e.preventDefault();
+                navigateTo(resolved, linkAnchor);
+              }};
+            }}
           }}
         }}
       }});
 
-      // Reset Content Scroll
-      document.getElementById('content-container').scrollTop = 0;
+      // Handle scrolling to anchor or resetting scroll
+      if (anchor) {{
+        setTimeout(() => {{
+          const targetEl = document.getElementById(anchor);
+          if (targetEl) {{
+            targetEl.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+          }} else {{
+            document.getElementById('content-container').scrollTop = 0;
+          }}
+        }}, 150);
+      }} else {{
+        document.getElementById('content-container').scrollTop = 0;
+      }}
     }}
 
     // Dynamic TOC builder
@@ -1422,8 +1450,8 @@ def get_html_template(docs, path_map):
         const text = heading.textContent;
         const tag = heading.tagName.toLowerCase();
         
-        // Ensure element has an ID to link to
-        const headingId = `heading-${{idx}}`;
+        // Ensure element has a semantic ID to link to
+        const headingId = githubSlugify(text, idx);
         heading.setAttribute('id', headingId);
 
         tocHtml += `
@@ -1473,10 +1501,20 @@ def get_html_template(docs, path_map):
     }}
 
     // Dynamic Navigation Routing
-    function navigateTo(id) {{
-      window.location.hash = id;
+    function navigateTo(id, anchor) {{
+      const hash = id + (anchor ? `:${{anchor}}` : '');
+      window.location.hash = hash;
       // Close sidebar on mobile
       sidebar.classList.remove('open');
+    }}
+
+    // Helper to parse dynamic route parameters from hash (docId:anchor)
+    function parseHash(hashStr) {{
+      const parts = hashStr.split(':');
+      return {{
+        docId: parts[0] || '',
+        anchor: parts[1] || ''
+      }};
     }}
 
     // Full-text Local Search Engine
@@ -1564,9 +1602,12 @@ def get_html_template(docs, path_map):
 
     // Handle Hash Navigation (browser history)
     window.addEventListener('hashchange', () => {{
-      const hash = window.location.hash.substring(1);
-      if (hash) {{
-        loadDocument(hash);
+      const hashStr = window.location.hash.substring(1);
+      if (hashStr) {{
+        const {{ docId, anchor }} = parseHash(hashStr);
+        if (docId) {{
+          loadDocument(docId, anchor);
+        }}
       }}
     }});
 
@@ -1574,15 +1615,19 @@ def get_html_template(docs, path_map):
     window.addEventListener('DOMContentLoaded', () => {{
       renderSidebar();
       
-      const hash = window.location.hash.substring(1);
-      if (hash && docs.some(d => d.id === hash)) {{
-        loadDocument(hash);
-      }} else {{
-        // Load default document (usually README or overview)
-        const defaultDoc = docs.find(d => d.id === 'readme') || docs[0];
-        if (defaultDoc) {{
-          navigateTo(defaultDoc.id);
+      const hashStr = window.location.hash.substring(1);
+      if (hashStr) {{
+        const {{ docId, anchor }} = parseHash(hashStr);
+        if (docId && docs.some(d => d.id === docId)) {{
+          loadDocument(docId, anchor);
+          return;
         }}
+      }}
+      
+      // Load default document (usually README or overview)
+      const defaultDoc = docs.find(d => d.id === 'readme') || docs[0];
+      if (defaultDoc) {{
+        navigateTo(defaultDoc.id);
       }}
     }});
 

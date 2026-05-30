@@ -3,7 +3,7 @@
 Bộ repo này là một "operating system" cho Agentic SDLC: không chỉ nói về AI agent, mà cung cấp tài liệu, template và checklist để điều hành AI agent trong dự án phần mềm thật.
 
 > [!TIP]
-> Bạn có thể xem bản đồ trực quan toàn cảnh với 6 sơ đồ Mermaid chi tiết tại [Bản đồ Quy trình trực quan (Master Visual Map)](../Agentic_SDLC_Master_Map.md) trước khi đi sâu vào từng tài liệu cụ thể dưới đây.
+> Bạn có thể bắt đầu bằng việc xem [Bản đồ Hệ thống Tài liệu](../DOCUMENTATION_MAP.md) để hiểu rõ cấu trúc thư mục, hoặc xem bản đồ trực quan toàn cảnh với các sơ đồ Mermaid chi tiết tại [Bản đồ Quy trình trực quan (Master Visual Map)](../Agentic_SDLC_Master_Map.md) trước khi đi sâu vào từng tài liệu cụ thể dưới đây.
 
 ## Mục tiêu
 
@@ -40,5 +40,5 @@ flowchart LR
 
 ## Nguồn tham chiếu
 
-Đọc `Agentic_SDLC_Deep_Dive.md` khi cần hiểu sâu nền tảng, rủi ro, reasoning và bối cảnh. Dùng thư mục `docs/`, `templates/`, `checklists/` khi triển khai thực tế.
+Xem chi tiết danh mục tài liệu tại [Bản đồ Hệ thống Tài liệu](../DOCUMENTATION_MAP.md). Đọc `Agentic_SDLC_Deep_Dive.md` khi cần hiểu sâu nền tảng lý thuyết, rủi ro, reasoning và bối cảnh. Dùng thư mục `docs/`, `templates/`, `checklists/` khi triển khai thực tế.
 
