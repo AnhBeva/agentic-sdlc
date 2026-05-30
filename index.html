@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic SDLC — Operating System Portal</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Cổng thông tin quy trình Agentic SDLC - Cẩm nang thiết kế, vận hành, kiểm soát chất lượng và tự cải thiện cho AI Coding Agents và AI nghiệp vụ.">
+  <meta name="keywords" content="Agentic SDLC, AI Agent, Software Development Life Cycle, Software Engineering, Observability, OWASP Agentic, DevOps, CI/CD">
+  <meta name="author" content="AnhBeva">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Markdown, Code Highlighting & Diagrams Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <!-- Prism JS for beautiful Apple-style code highlighting -->
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- Mermaid.js for flowcharts, diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+
+  <style>
+    /* Design Tokens */
+    :root {
+      --bg-main: #f5f5f7;
+      --bg-card: #ffffff;
+      --bg-sidebar: rgba(245, 245, 247, 0.85);
+      --border-color: #e8e8ed;
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-body: #333336;
+      --accent: #0066cc;
+      --accent-hover: #0077ed;
+      --accent-soft: #e8f2fc;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --font-heading: 'Outfit', -apple-system, sans-serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    /* CSS Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-main);
+      color: var(--text-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Main Layout */
+    .app-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 320px;
+      background-color: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex-shrink: 0;
+      z-index: 10;
+      transition: var(--transition);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0066cc, #54a0ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 102, 204, 0.3);
+    }
+
+    .logo-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      background-color: var(--bg-main);
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-primary);
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      outline: none;
+      background-color: var(--bg-card);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      pointer-events: none;
+    }
+
+    /* Sidebar Nav List */
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+    }
+
+    .nav-category {
+      margin-bottom: 24px;
+    }
+
+    .category-title {
+      font-family: var(--font-heading);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding-left: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text-body);
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .nav-item-btn:hover {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+    }
+
+    .nav-item-btn.active {
+      background-color: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+      position: relative;
+    }
+
+    .nav-item-btn.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      background-color: var(--accent);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .nav-icon {
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+
+    .nav-item-btn.active .nav-icon {
+      color: var(--accent);
+    }
+
+    /* Main Area Styling */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background-color: var(--bg-card);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Top Bar Header */
+    .topbar {
+      height: 64px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      background-color: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 5;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .menu-toggle-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--text-primary);
+    }
+
+    .breadcrumbs {
+      font-size: 13px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .breadcrumb-sep {
+      color: #d2d2d7;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-body);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .action-btn:hover {
+      background-color: var(--bg-main);
+      border-color: #d2d2d7;
+      color: var(--text-primary);
+    }
+
+    /* Document Layout */
+    .document-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .content-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 48px 48px 80px 48px;
+      scroll-behavior: smooth;
+    }
+
+    .article-wrapper {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    /* Table of Contents */
+    .toc-wrapper {
+      width: 260px;
+      border-left: 1px solid var(--border-color);
+      padding: 32px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-family: var(--font-heading);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toc-link {
+      font-size: 13px;
+      color: var(--text-body);
+      text-decoration: none;
+      transition: var(--transition);
+      cursor: pointer;
+      display: block;
+      border-left: 2px solid transparent;
+      padding-left: 10px;
+    }
+
+    .toc-link:hover {
+      color: var(--accent);
+    }
+
+    .toc-link.active {
+      color: var(--accent);
+      font-weight: 600;
+      border-left-color: var(--accent);
+    }
+
+    .toc-link.indent-h3 {
+      padding-left: 20px;
+    }
+
+    /* Styled Markdown Content styling (Apple style) */
+    .markdown-body {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--text-body);
+      line-height: 1.7;
+    }
+
+    .markdown-body h1 {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+      letter-spacing: -0.8px;
+      line-height: 1.25;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    .markdown-body h2 {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 40px;
+      margin-bottom: 16px;
+      letter-spacing: -0.4px;
+      line-height: 1.3;
+      border-bottom: 1px solid rgba(232, 232, 237, 0.5);
+      padding-bottom: 8px;
+    }
+
+    .markdown-body h3 {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 24px;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .markdown-body p {
+      margin-bottom: 20px;
+    }
+
+    .markdown-body a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid transparent;
+      transition: var(--transition);
+    }
+
+    .markdown-body a:hover {
+      border-bottom-color: var(--accent);
+    }
+
+    /* Lists styling */
+    .markdown-body ul, .markdown-body ol {
+      margin-bottom: 20px;
+      padding-left: 24px;
+    }
+
+    .markdown-body li {
+      margin-bottom: 8px;
+    }
+
+    .markdown-body li > ul, .markdown-body li > ol {
+      margin-top: 8px;
+      margin-bottom: 0;
+    }
+
+    /* Beautiful checklists */
+    .markdown-body ul li input[type="checkbox"] {
+      margin-right: 8px;
+      accent-color: var(--accent);
+      transform: scale(1.1);
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+
+    /* Blockquotes */
+    .markdown-body blockquote {
+      border-left: 4px solid var(--accent);
+      padding: 12px 20px;
+      background-color: var(--bg-main);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-bottom: 24px;
+      color: var(--text-body);
+      font-style: italic;
+    }
+
+    /* Tables */
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 28px;
+      font-size: 14px;
+      box-shadow: var(--shadow-sm);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .markdown-body th, .markdown-body td {
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    .markdown-body th {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-weight: 600;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .markdown-body td {
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+    }
+
+    .markdown-body tr:last-child td {
+      border-bottom: none;
+    }
+
+    .markdown-body tr:nth-child(even) td {
+      background-color: #fafafc;
+    }
+
+    /* Code Blocks */
+    .markdown-body code {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      background-color: var(--bg-main);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #bf3434;
+    }
+
+    .markdown-body pre {
+      background-color: #1e1e24;
+      padding: 18px;
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+    }
+
+    .markdown-body pre code {
+      background-color: transparent;
+      padding: 0;
+      color: #e5c07b;
+      font-size: 13px;
+    }
+
+    /* Custom Alerts (Github Alerts in Apple design) */
+    .custom-alert {
+      margin-bottom: 24px;
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      border-left: 4px solid transparent;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .custom-alert-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .custom-alert-title {
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .custom-alert-content {
+      font-size: 14.5px;
+      color: var(--text-body);
+    }
+
+    .custom-alert-content p {
+      margin-bottom: 0 !important;
+    }
+
+    .alert-note {
+      background-color: #f2f7fc;
+      border-left-color: #0066cc;
+    }
+    .alert-note .custom-alert-title, .alert-note i {
+      color: #0066cc;
+    }
+
+    .alert-tip {
+      background-color: #f2faf3;
+      border-left-color: #34c759;
+    }
+    .alert-tip .custom-alert-title, .alert-tip i {
+      color: #34c759;
+    }
+
+    .alert-important {
+      background-color: #fbf5fc;
+      border-left-color: #af52de;
+    }
+    .alert-important .custom-alert-title, .alert-important i {
+      color: #af52de;
+    }
+
+    .alert-warning {
+      background-color: #fff9f2;
+      border-left-color: #ff9500;
+    }
+    .alert-warning .custom-alert-title, .alert-warning i {
+      color: #ff9500;
+    }
+
+    .alert-caution {
+      background-color: #fff2f2;
+      border-left-color: #ff3b30;
+    }
+    .alert-caution .custom-alert-title, .alert-caution i {
+      color: #ff3b30;
+    }
+
+    /* Copy Code Button */
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #86868b;
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    /* Mermaid Container */
+    .mermaid-container {
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mermaid {
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Search Results View */
+    .search-results-container {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .search-result-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-result-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+
+    .search-result-title {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .search-result-snippet {
+      font-size: 13.5px;
+      color: var(--text-body);
+      line-height: 1.5;
+    }
+
+    .search-result-path {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      display: inline-block;
+      background-color: var(--bg-main);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .highlight {
+      background-color: rgba(255, 204, 0, 0.35);
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 1024px) {
+      .toc-wrapper {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: absolute;
+        left: -320px;
+        top: 0;
+        bottom: 0;
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .menu-toggle-btn {
+        display: block;
+      }
+
+      .content-container {
+        padding: 24px;
+      }
+    }
+
+    /* Print styling */
+    @media print {
+      .sidebar, .topbar, .toc-wrapper, .copy-btn, .action-btn {
+        display: none !important;
+      }
+      .app-container {
+        height: auto;
+        overflow: visible;
+      }
+      .main-wrapper {
+        overflow: visible;
+      }
+      .content-container {
+        overflow: visible;
+        padding: 0;
+      }
+      .article-wrapper {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-container">
+          <div class="logo-icon">
+            <i data-lucide="cpu" style="width: 20px; height: 20px;"></i>
+          </div>
+          <div class="logo-title">Agentic SDLC OS</div>
+        </div>
+        <div class="search-wrapper">
+          <i data-lucide="search" class="search-icon" style="width: 16px; height: 16px;"></i>
+          <input type="text" id="search-input" class="search-input" placeholder="Tìm kiếm tài liệu...">
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <!-- Rendered dynamically -->
+      </nav>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle-btn" id="menu-toggle">
+            <i data-lucide="menu"></i>
+          </button>
+          <div class="breadcrumbs" id="breadcrumbs">
+            <span>Core Guides</span>
+            <span class="breadcrumb-sep">&gt;</span>
+            <span style="color: var(--text-primary); font-weight: 500;">README.md</span>
+          </div>
+        </div>
+        
+        <div class="topbar-right">
+          <button class="action-btn" onclick="window.print()">
+            <i data-lucide="printer" style="width: 14px; height: 14px;"></i>
+            In / Lưu PDF
+          </button>
+        </div>
+      </header>
+
+      <!-- Document Layout -->
+      <div class="document-layout">
+        
+        <!-- Content Container -->
+        <main class="content-container" id="content-container">
+          <div class="article-wrapper">
+            
+            <!-- Standard Document Content -->
+            <div id="document-content" class="markdown-body">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Search Results Display -->
+            <div id="search-results" class="search-results-container">
+              <h2 style="font-family: var(--font-heading); font-size: 24px; font-weight: 600; color: var(--text-primary); margin-bottom: 20px;">Kết quả tìm kiếm</h2>
+              <div id="search-results-list" style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Search matches go here -->
+              </div>
+            </div>
+
+          </div>
+        </main>
+
+        <!-- Right Sidebar Table of Contents -->
+        <aside class="toc-wrapper" id="toc-wrapper">
+          <div class="toc-title">Mục lục trang</div>
+          <ul class="toc-list" id="toc-list">
+            <!-- Rendered dynamically -->
+          </ul>
+        </aside>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Document Data and Application Logic -->
+  <script>
+    // Embedded Document Database
+    const docs = [
+  {
+    "id": "agentic_sdlc_deep_dive",
+    "category": "Core Guides",
+    "title": "Agentic SDLC — Hiểu sâu bản chất, vận hành 24/7, giám sát, đánh giá & kiểm soát",
+    "path": "Agentic_SDLC_Deep_Dive.md",
+    "content": "# Agentic SDLC — Hiểu sâu bản chất, vận hành 24/7, giám sát, đánh giá & kiểm soát\n\n> Tài liệu tổng hợp tư duy mới nhất (2025–2026) về vòng đời phát triển và vận hành hệ thống agentic, áp dụng cho **cả coding agents lẫn agent nghiệp vụ**. Mục tiêu: để một AI agent hoạt động **ổn định liên tục 24/7**, có **cơ chế giám sát**, **tự cải thiện**, và **chất lượng xuất sắc**.\n\n---\n\n## 0. Cách đọc tài liệu này\n\n> [!TIP]\n> Để có cái nhìn trực quan và nhanh chóng nhất về toàn bộ quy trình, hãy bắt đầu bằng việc xem [Bản đồ Quy trình trực quan (Master Visual Map)](Agentic_SDLC_Master_Map.md) với 6 sơ đồ Mermaid chi tiết.\n\nTài liệu đi theo bốn trụ cột bạn ưu tiên:\n\n1. **Nguyên lý & bản chất** — vì sao agentic *khác* SDLC truyền thống.\n2. **Vận hành 24/7 & giám sát** — observability, error recovery, orchestration.\n3. **Đánh giá & chất lượng** — evals, LLM-as-judge, regression, CI/CD gating.\n4. **Kiểm soát & an toàn** — governance, OWASP agentic, guardrails, quyền hạn.\n\nCuối cùng là **lộ trình triển khai** và **checklist trưởng thành (maturity)**.\n\n---\n\n## 1. Bản chất: Agentic SDLC là gì và khác gì?\n\n### 1.1. Định nghĩa\n\n**Agentic SDLC** là mô hình phát triển/vận hành phần mềm trong đó **AI agent tham gia có ý nghĩa xuyên suốt toàn bộ vòng đời** — lập kế hoạch, viết code, review, ship, và vận hành — thay vì chỉ đứng ở một điểm chốt (như autocomplete). Điểm phân biệt cốt lõi: agent **theo đuổi mục tiêu qua nhiều bước mà không cần con người chỉ đạo từng bước một**.\n\nĐây là sự dịch chuyển từ *AI-assisted* (con người lái, AI gợi ý) sang *AI-executed* (agent tự thực thi giữa các điểm chốt do con người định nghĩa).\n\n### 1.2. Ba thay đổi nền tảng so với SDLC cũ\n\n| Khía cạnh | SDLC truyền thống | Agentic SDLC |\n|---|---|---|\n| Bản chất hệ thống | Tất định (deterministic) | **Xác suất (probabilistic)** — cùng input có thể ra output khác nhau |\n| Đơn vị điều khiển | Code path tường minh | **Đặc tả ý định (intent specification)** + ràng buộc |\n| Mô hình giao hàng | Ship một lần rồi bảo trì | **Học liên tục** — quan sát → sửa → cải thiện |\n| Vai trò con người | Thực thi từng bước | **Định hướng + duyệt tại checkpoint** trên các luồng tác động cao |\n| Sai lỗi điển hình | Bug logic, crash | **Loop vô hạn, gọi sai tool, context bị cắt, lệch mục tiêu** |\n\n> Tư tưởng chủ đạo: vì hệ thống *phi tất định*, ta không thể \"test một lần rồi yên tâm\". Phải thiết kế để **chấp nhận bất định** — ưu tiên *quan sát và hiệu chỉnh* hơn là *giao hàng một lần*.\n\n### 1.3. Nguyên lý thiết kế cốt lõi\n\n1. **Tự trị có điểm chốt (Autonomy with checkpoints):** agent hoàn tất công việc nhiều bước *giữa* các điểm review do con người định nghĩa — không phải tự do tuyệt đối, cũng không phải duyệt từng bước.\n2. **Đặc tả ý định thay vì điều khiển tất định:** mô tả *mục tiêu, ràng buộc, tiêu chí thành công*; để agent tìm đường thực thi.\n3. **Quan sát được (Observability-first):** mọi quyết định của agent phải để lại dấu vết (trace) đầy đủ.\n4. **Học liên tục (Continuous learning):** hệ thống cải thiện theo thời gian dựa trên kết quả thực tế, không \"đóng băng\" sau khi deploy.\n5. **Quyền hạn tối thiểu (Least privilege):** agent chỉ được cấp đúng quyền/tool cần thiết cho nhiệm vụ.\n\n---\n\n## 2. Vòng đời Agentic (ADLC) — sơ đồ tổng quan\n\nThay cho mô hình thác nước/agile tuyến tính, vòng đời agentic là **một vòng lặp khép kín có học hỏi**.\n\n> [!NOTE]\n> Chi tiết về phân vai con người/đại lý, artifact đầu ra đầu vào của từng pha, vui lòng tham khảo [Bản đồ Quy trình trực quan (Sơ đồ 1 - Master Landscape Map)](Agentic_SDLC_Master_Map.md#1-bản-đồ-toàn-cảnh-quy-trình-agentic-sdlc-master-landscape-map). Để xem luồng tương tác thực tế giữa các vai trò theo thời gian, xem [Sơ đồ Trình tự (Sơ đồ 2)](Agentic_SDLC_Master_Map.md#2-sơ-đồ-trình-tự-phát-triển-tính-năng-feature-development-sequence-diagram) và [Sơ đồ Trạng thái Nhiệm vụ (Sơ đồ 3)](Agentic_SDLC_Master_Map.md#3-sơ-đồ-trạng-thái-nhiệm-vụ-của-agent-agent-task-lifecycle-state-diagram).\n\n```mermaid\nflowchart LR\n    A[1. Đặc tả ý định<br/>Intent & ràng buộc] --> B[2. Lập kế hoạch<br/>Planning & phân rã]\n    B --> C[3. Thực thi<br/>Build / Code / Hành động]\n    C --> D[4. Kiểm thử & Eval<br/>Validation]\n    D --> E[5. Review & Duyệt<br/>Human checkpoint]\n    E --> F[6. Triển khai<br/>Deploy / Ship]\n    F --> G[7. Vận hành & Quan sát<br/>Operate 24/7]\n    G --> H[8. Học & Tự cải thiện<br/>Continuous learning]\n    H -.phản hồi.-> A\n    G -.sự cố / drift.-> D\n    E -.từ chối / sửa.-> B\n\n    style A fill:#e3f2fd,stroke:#1565c0\n    style E fill:#fff3e0,stroke:#e65100\n    style G fill:#e8f5e9,stroke:#2e7d32\n    style H fill:#f3e5f5,stroke:#6a1b9a\n```\n\n**Giải thích từng pha:**\n\n- **(1) Đặc tả ý định** — viết rõ mục tiêu, tiêu chí \"định nghĩa hoàn thành\" (DoD), ràng buộc an toàn, ngân sách (token/thời gian/chi phí).\n- **(2) Lập kế hoạch** — agent phân rã nhiệm vụ thành bước nhỏ, chọn tool, ước lượng rủi ro.\n- **(3) Thực thi** — agent hành động: viết code / gọi API / thao tác dữ liệu.\n- **(4) Kiểm thử & Eval** — chạy unit eval, kiểm tra máy-xác-minh-được, LLM-as-judge.\n- **(5) Review & duyệt** — con người duyệt tại các điểm tác động cao (HITL).\n- **(6) Triển khai** — ship có cổng chất lượng (eval-gated release).\n- **(7) Vận hành 24/7** — chạy liên tục, được giám sát qua trace + metrics.\n- **(8) Học & tự cải thiện** — đúc kết từ kết quả, tinh chỉnh skill/prompt/memory.\n\n---\n\n## 3. Kiến trúc một AI agent vận hành liên tục\n\n> [!NOTE]\n> Để xem sơ đồ kiến trúc mở rộng và chi tiết hơn về các lớp kiểm soát, giám sát và tự khắc phục lỗi, xem [Sơ đồ Kiến trúc Vận hành 24/7 & Xử lý lỗi (Sơ đồ 4)](Agentic_SDLC_Master_Map.md#4-sơ-đồ-kiến-trúc-vận-hành-247-xử-lý-lỗi-247-operation-error-recovery-architecture).\n\n```mermaid\nflowchart TB\n    subgraph CORE[Lõi Agent]\n        P[Planner / Reasoner<br/>lập kế hoạch & suy luận]\n        M[Memory<br/>ngắn hạn + dài hạn]\n        TL[Tool Layer<br/>API / code / truy vấn]\n        P <--> M\n        P <--> TL\n    end\n\n    subgraph CTRL[Lớp Kiểm soát]\n        G1[Guardrails đầu vào<br/>chống prompt injection]\n        G2[Policy & Quyền hạn<br/>least privilege]\n        G3[Guardrails đầu ra<br/>kiểm duyệt hành động]\n    end\n\n    subgraph OBS[Lớp Quan sát]\n        TR[Tracing<br/>OpenTelemetry GenAI]\n        EV[Evals online<br/>sampling production]\n        AL[Alerting & Dashboard]\n    end\n\n    subgraph LOOP[Vòng điều khiển vận hành]\n        SC[Scheduler / Orchestrator]\n        ER[Error Recovery<br/>retry / fallback / circuit breaker]\n        HI[Human-in-the-loop<br/>escalation]\n    end\n\n    IN[Sự kiện / Yêu cầu] --> G1 --> CORE\n    CORE --> G3 --> OUT[Hành động / Kết quả]\n    G2 -.kiểm soát.-> TL\n    CORE --> TR --> EV --> AL\n    SC --> CORE\n    CORE -.lỗi.-> ER -.không tự xử được.-> HI\n    AL -.bất thường.-> HI\n\n    style CORE fill:#e3f2fd,stroke:#1565c0\n    style CTRL fill:#ffebee,stroke:#c62828\n    style OBS fill:#e8f5e9,stroke:#2e7d32\n    style LOOP fill:#fff3e0,stroke:#e65100\n```\n\nBốn lớp tách bạch — **Lõi**, **Kiểm soát**, **Quan sát**, **Vòng vận hành** — là xương sống để agent chạy bền bỉ. Nguyên tắc: *lõi có thể sai, nhưng các lớp bao quanh phải bắt được cái sai đó.*\n\n---\n\n## 4. Vận hành 24/7 & cơ chế giám sát\n\n### 4.1. Vì sao giám sát truyền thống (APM) không đủ\n\nĐây là điểm mấu chốt cho mục tiêu \"ổn định liên tục\" của bạn:\n\n> Một agent **loop vô hạn, gọi sai tool, hoặc bịa kết quả (hallucinate) vẫn có thể trả về phản hồi \"thành công\" với độ trễ bình thường.** Công cụ APM truyền thống nhìn vào latency/error-rate sẽ **không phát hiện** được các lỗi này.\n\nPhần lớn sự cố agent đến từ **tool-call thất bại, context bị cắt cụt (truncation), và vòng lặp chạy hoang (runaway loop)** — chứ không phải lỗi của model. Do đó cần **agent-aware instrumentation** (đo đạc hiểu ngữ nghĩa agent).\n\n### 4.2. Tracing: ghi lại toàn bộ chuỗi quyết định\n\nMỗi lần agent chạy phải sinh ra một **trace** ghi lại: tool nào được gọi, context nào được lấy, agent suy luận qua từng bước ra sao, và output cuối có đạt ngưỡng chất lượng không.\n\n**Khuyến nghị kỹ thuật:**\n- Dùng **OpenTelemetry semantic conventions for GenAI** để trace *vendor-agnostic* (không khóa cứng vào một nhà cung cấp, dễ đổi/chồng nền tảng).\n- Dùng native adapter cho framework đang dùng (OpenAI Agents SDK, LangGraph, Mastra, Pydantic AI, LangChain, CrewAI, Vercel AI SDK); với stack tự xây thì OTel là fallback. Cả hai phải xuất trace **cùng một schema**.\n\n### 4.3. Ba \"tín hiệu sống\" cần theo dõi liên tục\n\n```mermaid\nflowchart LR\n    subgraph S[Tín hiệu giám sát 24/7]\n        direction TB\n        Q[Chất lượng<br/>đúng mục tiêu? hallucination?]\n        C[Chi phí<br/>token / call / $ mỗi nhiệm vụ]\n        L[Độ trễ & độ tin cậy<br/>latency, tool success rate]\n    end\n    S --> D{Vượt ngưỡng?}\n    D -->|Có| A[Alert + Escalate HITL]\n    D -->|Không| K[Tiếp tục + sampling eval]\n```\n\n| Nhóm tín hiệu | Ví dụ chỉ số | Vì sao quan trọng |\n|---|---|---|\n| **Chất lượng** | tỉ lệ hoàn thành nhiệm vụ, tỉ lệ hallucination, độ trôi (drift) | bắt lỗi \"thành công giả\" |\n| **Chi phí** | token/nhiệm vụ, số tool-call, $ /ngày | tránh \"đốt tiền\" khi chạy 24/7 |\n| **Độ tin cậy** | tool-call success rate, số lần loop, độ sâu retry | bắt runaway loop & tool fail |\n\n### 4.4. Error recovery — để agent \"tự đứng dậy\"\n\nĐể chạy liên tục không cần người trực, agent cần các cơ chế phục hồi:\n\n- **Retry có giới hạn + backoff:** thử lại tool fail, nhưng có trần để tránh loop.\n- **Fallback:** đổi tool/model/route khác khi đường chính hỏng.\n- **Circuit breaker:** ngắt mạch khi một dependency liên tục lỗi, tránh lan rộng.\n- **Loop/budget guard:** giới hạn số bước, token, thời gian cho một nhiệm vụ; vượt thì dừng & escalate.\n- **Checkpoint & resume:** lưu trạng thái để khôi phục sau gián đoạn (đặc biệt với nhiệm vụ dài nhiều ngày).\n- **Escalation tới con người:** khi agent không tự xử được, chuyển cho HITL thay vì \"đoán bừa\".\n\n### 4.5. Orchestration cho hoạt động liên tục\n\nCác hành vi giá trị cao nhất — **học liên tục, ngữ cảnh bền vững, thực thi 24/7** — *không tương thích* với mô hình chạy cục bộ kiểu bật-tắt. Vận hành 24/7 nên dựa trên **thiết kế cloud-native**: scheduler kích hoạt nhiệm vụ theo lịch/sự kiện, memory bền vững xuyên phiên, và state được lưu trữ tập trung.\n\n---\n\n## 5. Đánh giá & chất lượng — làm sao đạt \"xuất sắc nhất\"\n\nChất lượng agentic không đến từ một lần test, mà từ **hệ thống đánh giá nhiều lớp, chạy liên tục**.\n\n### 5.1. Ba lớp đánh giá bắt buộc\n\n```mermaid\nflowchart TB\n    U[Lớp 1 — Unit Evals<br/>kiểm từng bước rời rạc<br/>máy xác minh được] --> R[Lớp 2 — Regression Suite<br/>LLM-as-judge cho chất lượng chủ quan<br/>chạy tự động hằng đêm]\n    R --> P[Lớp 3 — Production Trace Sampling<br/>lấy mẫu trace thực tế<br/>bắt drift ngoài đời]\n    P -.phát hiện ca lỗi mới.-> U\n    style U fill:#e3f2fd,stroke:#1565c0\n    style R fill:#fff3e0,stroke:#e65100\n    style P fill:#e8f5e9,stroke:#2e7d32\n```\n\n1. **Unit evals** — kiểm các bước rời rạc bằng cách *máy xác minh được* (deterministic checks): đúng định dạng, gọi đúng tool, kết quả khớp ground-truth.\n2. **LLM-as-judge regression suite** — dùng một LLM mạnh chấm chất lượng *chủ quan* (mạch lạc, hữu ích, đúng ý định) cho các output khó định lượng; chạy **regression tự động hằng đêm**.\n3. **Production trace sampling liên tục** — lấy mẫu trace thật để bắt **drift** mà bộ test offline không thấy. Đây là vòng phản hồi đưa ca lỗi mới về làm test case.\n\n### 5.2. LLM-as-judge: mạnh nhưng phải kỷ luật\n\n- **Bản chất:** dùng một LLM mạnh để chấm/xếp hạng output của agent, mô phỏng người đánh giá — cho phép **đánh giá ở quy mô lớn**.\n- **Giới hạn quan trọng:** judge cũng có thiên lệch. **Không được thay thế hoàn toàn con người.** Phải *meta-evaluate* chính judge (kiểm tra judge có chấm đúng không).\n- **Best practice — đánh giá lai (hybrid):** kết hợp **kiểm tra tất định/thống kê** + **LLM-as-judge**, tránh phụ thuộc vào một thước đo duy nhất. Dùng **review người có mục tiêu trên các luồng tác động cao** để *hiệu chỉnh (calibrate)* judge cho khớp chuẩn sản phẩm.\n- Một biến thể mới là **Agent-as-a-Judge**: dùng chính agent để đánh giá agent, bổ trợ (không thay thế) giám sát con người.\n\n### 5.3. Cổng chất lượng trong CI/CD (eval-gated release)\n\nĐể chất lượng không tụt khi cập nhật:\n\n- Chạy eval **tự động trên mỗi thay đổi code** (ví dụ tích hợp GitHub Actions).\n- **Chặn (gate) release** nếu thay đổi làm *giảm* điểm chất lượng so với baseline.\n- Báo cáo regression hằng đêm để phát hiện sớm sa sút.\n\n```mermaid\nflowchart LR\n    Dev[Thay đổi prompt/code/tool] --> CI[CI chạy eval suite]\n    CI --> Gate{Điểm >= baseline?}\n    Gate -->|Đạt| Ship[Cho phép deploy]\n    Gate -->|Không đạt| Block[Chặn + báo cáo regression]\n    Ship --> Prod[Production]\n    Prod --> Sample[Sampling trace] --> CI\n```\n\n### 5.4. Taxonomy \"đo cái gì\"\n\nMột kỷ luật quan trọng: có **bảng phân loại rõ ràng về cái cần đo**. Gợi ý các chiều:\n- **Task success** (hoàn thành đúng mục tiêu)\n- **Trung thực / không bịa** (faithfulness, grounding)\n- **Tuân thủ quy trình** (gọi đúng tool theo đúng thứ tự)\n- **An toàn** (không vi phạm policy)\n- **Hiệu quả** (chi phí/độ trễ hợp lý)\n- **Trải nghiệm** (mạch lạc, đúng giọng điệu).\n\n---\n\n## 6. Kiểm soát & an toàn (Governance)\n\n### 6.1. OWASP Top 10 for Agentic Applications (bản 2025/2026)\n\nKhung rủi ro tham chiếu hàng đầu cho agent. Bản 2026 tập trung vào các thất bại từ *goal misalignment, tool misuse, delegated trust, giao tiếp giữa các agent, bộ nhớ bền vững, và hành vi tự trị nổi lên (emergent)*. Một số rủi ro tiêu biểu:\n\n| Rủi ro | Mô tả ngắn | Biện pháp giảm thiểu |\n|---|---|---|\n| **Agent Goal Hijack** | mục tiêu bị chiếm/lệch hướng | đặc tả ý định rõ, kiểm tra mục tiêu định kỳ |\n| **Tool Misuse & Exploitation** | lạm dụng/khai thác tool | allowlist tool, sandbox, xác thực tham số |\n| **Identity & Privilege Abuse** | lạm quyền danh tính | least privilege, scoped credentials, audit |\n| **Prompt Injection** | input độc chiếm điều khiển | guardrails đầu vào, tách dữ liệu khỏi lệnh |\n| **Excessive Agency** | agent được trao quá nhiều quyền tự quyết | giới hạn hành động, HITL cho hành động rủi ro |\n| **Insecure Output Handling** | output không kiểm duyệt gây hại | guardrails đầu ra, kiểm tra trước khi thực thi |\n| **Memory Poisoning** | đầu độc bộ nhớ dài hạn | xác thực nguồn ghi vào memory, cách ly |\n\n> Nguyên tắc thực hành: **ánh xạ từng rủi ro OWASP sang một biện pháp eval/guardrail/alert cụ thể.** Mỗi rủi ro phải có \"người gác cổng\".\n\n### 6.2. Guardrails — hai tầng\n\n```mermaid\nflowchart LR\n    IN[Đầu vào] --> GI[Guardrail vào<br/>lọc injection, kiểm policy, phân loại ý định]\n    GI --> AGENT[Agent thực thi]\n    AGENT --> GO[Guardrail ra<br/>kiểm duyệt nội dung, chặn hành động nguy hiểm, PII]\n    GO --> OUT[Hành động/Kết quả]\n    GI -.vi phạm.-> REJ[Từ chối / Escalate]\n    GO -.vi phạm.-> REJ\n```\n\n### 6.3. Quản trị quyền hạn & danh tính\n\n- **Least privilege:** agent chỉ có đúng tool & quyền tối thiểu cho nhiệm vụ.\n- **Scoped, short-lived credentials:** token có phạm vi hẹp, hết hạn nhanh.\n- **Phân tách môi trường:** sandbox cho hành động rủi ro; production tách biệt.\n- **Audit trail bất biến:** mọi hành động ghi log không sửa được để truy vết & tuân thủ.\n- **Human approval cho hành động không thể hoàn tác:** xóa dữ liệu, chuyển tiền, gửi ra ngoài… phải qua duyệt.\n\n### 6.4. Con người ở đâu trong vòng lặp? (HITL)\n\nHITL là *không thể thiếu* cho các kịch bản tác động cao. Vai trò con người:\n- Đánh giá **chuỗi suy luận** của agent và sự *mạch lạc của workflow nhiều bước*.\n- Kiểm tra **khớp với yêu cầu nghiệp vụ**.\n- **Hiệu chỉnh judge** và chuẩn chất lượng qua review có mục tiêu trên luồng tác động cao.\n\nCách bố trí HITL theo mức rủi ro:\n\n```mermaid\nflowchart TB\n    T{Mức rủi ro hành động}\n    T -->|Thấp / hoàn tác được| AUTO[Tự động hoàn toàn<br/>+ sampling kiểm tra sau]\n    T -->|Trung bình| ASYNC[Tự động + review bất đồng bộ<br/>spot-check]\n    T -->|Cao / không hoàn tác được| SYNC[Bắt buộc duyệt trước khi thực thi]\n    style AUTO fill:#e8f5e9,stroke:#2e7d32\n    style ASYNC fill:#fff3e0,stroke:#e65100\n    style SYNC fill:#ffebee,stroke:#c62828\n```\n\n---\n\n## 7. Tự cải thiện (Self-improvement)\n\n> [!NOTE]\n> Xem chi tiết sơ đồ luồng dữ liệu, đánh giá sandbox và cơ chế triển khai của quy trình này tại [Sơ đồ Vòng lặp Tự cải thiện liên tục (Sơ đồ 5)](Agentic_SDLC_Master_Map.md#5-sơ-đồ-vòng-lặp-tự-cải-thiện-liên-tục-continuous-self-improvement-loop).\n\nMục tiêu \"tự cải thiện\" của bạn đã có nhiều hướng *đang chạy thực tế trong 2026*:\n\n- **Tinh chỉnh skill theo kết quả:** agent tạo & tinh chỉnh \"kỹ năng\" riêng dựa trên kết quả nhiệm vụ; quan sát thấy hiệu năng *cải thiện theo tuần* trên các loại nhiệm vụ lặp lại.\n- **Hướng tiến hóa (evolutionary):** AlphaEvolve, ShinkaEvolve — tiến hóa lời giải/chiến lược.\n- **Học tăng cường (RL):** SWE-RL, SAGE — học từ phần thưởng/kết quả.\n- **Hệ thống bộ nhớ (memory):** Mem0, MemOS, SimpleMem — tích lũy & tái dùng kinh nghiệm.\n\nBằng chứng quy mô: một framework \"Deep Researcher Agent\" đã hoàn thành **500+ chu kỳ thí nghiệm** trên 4 dự án song song trong **hơn 30 ngày**, đạt **~52% cải thiện so với baseline** — minh chứng cho vòng lặp tự cải thiện chạy liên tục.\n\n### 7.1. Vòng lặp tự cải thiện an toàn\n\n```mermaid\nflowchart LR\n    R[Kết quả thực tế + trace] --> A[Phân tích thất bại<br/>failure analysis]\n    A --> H[Đề xuất cải thiện<br/>prompt / skill / memory / tool]\n    H --> S[Thử nghiệm trong sandbox<br/>+ eval offline]\n    S --> G{Tốt hơn baseline & an toàn?}\n    G -->|Có| D[Triển khai dần<br/>canary / A-B]\n    G -->|Không| X[Loại bỏ]\n    D --> R\n    style S fill:#fff3e0,stroke:#e65100\n    style G fill:#ffebee,stroke:#c62828\n```\n\n> Cảnh báo: tự cải thiện *không kiểm soát* là rủi ro (emergent behavior, memory poisoning). Mọi thay đổi tự sinh phải đi qua **eval + sandbox + canary** trước khi vào production.\n\n---\n\n## 8. Áp dụng cho hai bối cảnh\n\n### 8.1. Coding agents (phát triển phần mềm)\nAgent làm *first-pass executor*: phân tích khả thi khi planning, viết feature khi build, mở rộng test coverage khi validate, nêu rủi ro khi review — nén thời gian từ tuần xuống ngắn hơn. Công cụ phổ biến 2026: Claude Code, Cursor, GitHub Copilot Agent, Codex, Gemini Code Assist (đa số đội dùng *kết hợp nhiều công cụ*). Quản trị bằng: PR review bắt buộc, eval-gated CI, test sinh tự động, branch sandbox.\n\n### 8.2. Agent nghiệp vụ (business/ops)\nCùng khung vòng đời, nhưng \"build\" = thực hiện quy trình nghiệp vụ (xử lý đơn, phân loại email, đối soát dữ liệu…). Khác biệt: hành động thường *tác động trực tiếp tới hệ thống thật & tiền*, nên **HITL cho hành động không hoàn tác** và **audit trail** càng quan trọng. Cùng triết lý: đặc tả ý định → eval nhiều lớp → observability → governance.\n\n---\n\n## 9. Lộ trình triển khai (maturity ladder)\n\n```mermaid\nflowchart LR\n    L0[L0 — Hỗ trợ<br/>AI gợi ý, người làm] --> L1[L1 — Agent có giám sát<br/>tự thực thi, duyệt mọi bước rủi ro]\n    L1 --> L2[L2 — Agent bán tự trị<br/>tự thực thi giữa các checkpoint]\n    L2 --> L3[L3 — Vận hành 24/7<br/>observability + error recovery đầy đủ]\n    L3 --> L4[L4 — Tự cải thiện<br/>vòng học khép kín có kiểm soát]\n```\n\n**Thứ tự nên xây (đừng nhảy cóc):**\n1. **Observability trước** — không thấy thì không kiểm soát được. Dựng tracing (OTel) + dashboard 3 tín hiệu.\n2. **Eval suite** — unit + LLM-as-judge + sampling; cắm vào CI làm cổng chất lượng.\n3. **Guardrails & governance** — ánh xạ OWASP, least privilege, HITL theo mức rủi ro.\n4. **Error recovery & orchestration** — retry/fallback/circuit breaker/budget guard cho 24/7.\n5. **Self-improvement** — chỉ bật sau khi 4 lớp trên vững, và luôn qua sandbox + canary.\n\n---\n\n## 10. Checklist \"sản xuất sẵn sàng\" (production-ready)\n\n**Quan sát**\n- [ ] Mọi run sinh trace đầy đủ chuỗi quyết định (OTel GenAI semantic conventions).\n- [ ] Dashboard theo dõi 3 nhóm: chất lượng, chi phí, độ tin cậy.\n- [ ] Alert khi vượt ngưỡng → escalate HITL.\n\n**Đánh giá**\n- [ ] 3 lớp eval: unit (deterministic) + LLM-as-judge regression hằng đêm + sampling production.\n- [ ] Eval-gated CI: chặn release làm tụt điểm.\n- [ ] Meta-evaluate judge; review người hiệu chỉnh trên luồng tác động cao.\n\n**Vận hành 24/7**\n- [ ] Retry+backoff, fallback, circuit breaker, budget/loop guard.\n- [ ] Checkpoint & resume cho nhiệm vụ dài.\n- [ ] Thiết kế cloud-native, memory & state bền vững.\n\n**Kiểm soát & an toàn**\n- [ ] Ánh xạ từng rủi ro OWASP Agentic → guardrail/eval/alert.\n- [ ] Guardrails đầu vào & đầu ra.\n- [ ] Least privilege, scoped credentials, audit trail bất biến.\n- [ ] HITL bắt buộc cho hành động không hoàn tác.\n\n**Tự cải thiện**\n- [ ] Failure analysis tự động từ trace.\n- [ ] Thay đổi tự sinh đi qua sandbox + eval + canary trước production.\n\n---\n\n---\n\n# PHẦN II — Enterprise Agentic Delivery Playbook\n\n> Phần I giải thích nền tảng Agentic SDLC. Phần II chuyển các phản biện thực tế thành **playbook vận hành được** cho phần mềm lớn, nhiều nghiệp vụ, có UI/UX phức tạp và nhiều agent cùng tham gia.\n\n## 11. Đánh giá tổng quan & nguyên lý điều hành\n\nBốn ý kiến phản biện đều đúng, và đều chỉ vào cùng một rủi ro: nếu để agent \"tự hiểu toàn cục\", tự quyết định thiết kế, tự chia module, tự phối hợp với nhau thì chất lượng sẽ dao động mạnh. Agent có thể thực thi nhanh, nhưng không tự nhiên sở hữu được ý định sản phẩm, chuẩn thẩm mỹ, kiến trúc dài hạn, hay logic nghiệp vụ xuyên module.\n\n| Điểm gãy | Đánh giá | Cơ chế kiểm soát bắt buộc |\n|---|---|---|\n| UI/UX agent khó làm chủ | **Rất đúng** | Design system, token, component contract, visual regression, designer checkpoint |\n| Kiến trúc/module nhiều rủi ro | **Phải khóa trước khi build** | SDD, ADR, architecture freeze, debate review, threat modeling |\n| Module lớn dễ rời rạc | **Không giải bằng prompt dài** | Domain boundary, interface contract, `AGENTS.md` phân tầng, contract test, E2E nghiệp vụ |\n| Multi-agent song song dễ xung đột | **Tăng tốc nhưng phải điều phối** | Supervisor, worktree isolation, task ownership, merge gate, trace/cost budget |\n\n**Nguyên lý trung tâm:**\n\n> **Human owns intent, architecture, design standard, contracts; agents own execution inside constraints.**\n\nNói cách khác: con người sở hữu ý định, chuẩn thiết kế, kiến trúc, hợp đồng, quyết định một chiều và tiêu chí chất lượng. Agent chỉ nên thực thi bên trong các ràng buộc đó. Chất lượng không đến từ việc agent \"thông minh hơn\", mà từ việc biến các chuẩn chủ quan thành **nguồn sự thật máy-đọc-được** và **cổng kiểm soát tự động**.\n\n```mermaid\nflowchart LR\n    H[Human-owned<br/>Intent, UX standard, architecture, contracts] --> SOT[Machine-readable sources of truth]\n    SOT --> A[Agent execution<br/>inside constraints]\n    A --> G[Quality gates<br/>tests, evals, reviews]\n    G -->|đạt| M[Merge / ship]\n    G -->|không đạt| F[Fix / escalate]\n    F --> H\n    style H fill:#e3f2fd,stroke:#1565c0\n    style SOT fill:#e8f5e9,stroke:#2e7d32\n    style G fill:#fff3e0,stroke:#e65100\n```\n\n## 12. Quality Control Matrix — nối rủi ro với guardrail\n\n> [!NOTE]\n> Sơ đồ hóa toàn bộ các cổng chất lượng của doanh nghiệp được mô tả chi tiết tại [Bản đồ Cổng Kiểm soát Chất lượng Doanh nghiệp (Sơ đồ 6)](Agentic_SDLC_Master_Map.md#6-bản-đồ-cổng-kiểm-soát-chất-lượng-doanh-nghiệp-enterprise-quality-control-gates-map).\n\nBảng này là lớp điều hành mới cho Phần II: mỗi điểm gãy phải có nguồn sự thật, guardrail tự động, checkpoint con người và tiêu chí pass/fail rõ ràng.\n\n| Khu vực | Nguồn sự thật | Guardrail tự động | Checkpoint con người | Pass/fail |\n|---|---|---|---|---|\n| **UI/UX** | Design tokens, component library, UX guidelines | Token linter, component-only rule, visual regression, accessibility checks | Designer/product review cho thay đổi thị giác lớn | Không hard-code style, không lệch baseline ngoài ngưỡng, đủ responsive/a11y/states |\n| **Architecture** | Spec, ADR, architecture principles, threat model | Dependency rules, architecture tests, security scans, API schema checks | Architect + security + domain lead duyệt trước build | ADR được duyệt, ranh giới rõ, rollback path có, rủi ro chính có mitigation |\n| **Module lớn** | Domain map, interface contracts, data ownership, `AGENTS.md` | Contract tests, integration tests, E2E flows, schema compatibility checks | Domain owner duyệt workflow nghiệp vụ xuyên module | Không phá contract, không nhập nhằng ownership, E2E nghiệp vụ đạt |\n| **Multi-agent** | Task board, ownership map, branch/worktree policy, merge protocol | Isolated worktree, CI per branch, trace/cost/loop guard, merge gate | Supervisor/human lead duyệt phân việc và tích hợp | Không sửa chồng lấn, không merge khi test/eval fail, trace đầy đủ từng agent |\n\n> Quy tắc vận hành: **mỗi rủi ro lớn phải có ít nhất một guardrail máy kiểm được và một checkpoint người duyệt được.** Nếu chỉ có hướng dẫn bằng lời, agent sẽ làm sai khi áp lực ngữ cảnh tăng.\n\n## 13. UI/UX — từ thẩm mỹ chủ quan thành kiểm soát tất định\n\n### 13.1. Rủi ro gốc\n\nUI/UX là vùng agent dễ tạo ra nhiều chỉnh sửa nhất vì \"đẹp\", \"đúng nhịp\", \"đồng nhất\", \"dễ hiểu\" không có một đáp án duy nhất. Agent thường sai ở các điểm: spacing lệch chuẩn, typography không đồng bộ, màu không đúng token, component tự chế, thiếu trạng thái loading/error/empty, responsive vỡ ở breakpoint nhỏ, hoặc một màn hình nhìn ổn nhưng không khớp với hệ thống tổng thể.\n\n### 13.2. Vì sao AI agent dễ sai\n\nAgent nhìn UI qua mô tả rời rạc và ảnh chụp cục bộ, không tự có trí nhớ thị giác đầy đủ về toàn bộ sản phẩm. Nếu không có design system dạng máy-đọc-được, agent sẽ suy diễn từ vài ví dụ và tạo biến thể gần đúng. Kết quả là mỗi màn hình \"hơi khác một chút\"; tích lũy lại thành sản phẩm thiếu đồng nhất.\n\n### 13.3. Quy trình đồng bộ Figma-to-Code toàn diện\nĐể đảm bảo AI Agent tuân thủ giao diện tuyệt đối, quy trình làm việc được cấu trúc thành một chuỗi tự động hóa và checkpoint nghiêm ngặt:\n\n```mermaid\nflowchart TD\n    F[Figma Design Studio] -->|Export variables & styles| Tok[Design Tokens JSON / CSS]\n    F -->|Export layout structure| DSL[Layout Blueprint Schema]\n    Tok & DSL --> AgentInput[Đầu vào của Agent]\n    AgentInput --> AgentCode[Agent viết code giao diện]\n    AgentCode --> Lint[Strict Tailwind/CSS Linter Check]\n    Lint -->|Fail| AgentFixLint[Agent tự sửa lỗi styles]\n    Lint -->|Pass| Evals[Visual QA & Auto-Regression Testing]\n    Evals -->|Lấy mẫu và so sánh screenshot diff > 0.5%| Feedback[Feed image diff + error log cho Agent]\n    Feedback --> AgentCode\n    Evals -->|Pass| HITL[Designer Verification Portal]\n    HITL -->|Từ chối & Comment| AgentCode\n    HITL -->|Duyệt| MasterPR[Merge PR & Deploy]\n```\n\n1. **Bước 1: Token hóa thiết kế (Design Tokenization):**\n   - Màu sắc, khoảng cách (spacing), kiểu chữ (typography), bo góc (border radius), bóng đổ (shadow) được chốt trên Figma.\n   - Sử dụng công cụ (như Figma Variables, Token Studio, Style Dictionary) để biên dịch tự động các biến thiết kế này thành định dạng máy đọc được (`tokens.json` hoặc biến CSS/Tailwind configuration). Các token này là **nguồn sự thật duy nhất** (Single Source of Truth).\n\n2. **Bước 2: Lập sơ đồ cấu trúc layout (Layout Blueprint):**\n   - Thay vì để agent tự thiết kế vị trí các phần tử, sơ đồ Figma được chuyển đổi thành cấu trúc DSL (Domain Specific Language) dạng JSON hoặc HTML skeleton định nghĩa cây phân cấp component, cấu trúc lưới (grid), và responsive breakpoint.\n\n3. **Bước 3: Thực thi của Agent dưới ràng buộc cứng:**\n   - Agent nhận `tokens.json` và Layout Blueprint cùng với danh mục các component đã được xây dựng sẵn.\n   - Áp dụng nguyên tắc **Component-Only Rule**: Agent chỉ được sử dụng các nguyên mẫu component đã chốt trong hệ thống (Button, Input, Card, Modal, v.v.). Nghiêm cấm agent tự viết inline styles hoặc các class CSS tùy tiện ngoài danh mục token cho phép.\n\n4. **Bước 4: Kiểm duyệt mã nguồn tự động (Linting Gate):**\n   - Chạy linter cấu hình nghiêm ngặt (ví dụ: `eslint-plugin-tailwindcss` chặn các class tùy tiện như `h-[123px]`, `w-[54px]`, bắt buộc dùng tokens `h-12`, `w-24`).\n   - Nếu phát hiện mã nguồn cứng (hard-coded hex color `#FF5733` hoặc spacing tùy tiện `margin-top: 13px`), linter sẽ chặn và trả lỗi về cho Agent tự sửa đổi ngay tại sandbox.\n\n5. **Bước 5: Vòng lặp Visual QA & Hồi quy tự động (Automated Visual Regression Loop):**\n   - CI/CD khởi động một headless browser (Playwright/Puppeteer) để render giao diện mới dưới nhiều kích thước màn hình (mobile, tablet, desktop) và các trạng thái (default, hover, active, focus, loading, error, empty).\n   - Tiến hành so sánh ảnh chụp màn hình (screenshot) của giao diện thật với bản thiết kế mẫu được xuất tự động từ Figma API hoặc baseline cũ.\n   - Nếu tỉ lệ khác biệt (diff) vượt quá **0.5%**, hệ thống sẽ tự động ghép ảnh diff màu đỏ, trích xuất mã CSS lỗi và gửi ngược lại cho Agent kèm yêu cầu: *\"Giao diện lệch 3px padding ở góc trên bên phải, hãy sửa lại bằng cách áp dụng token spacing.md\"*. Agent chạy vòng lặp sửa lỗi này tối đa 3 lần.\n\n6. **Bước 6: Cổng xác nhận của Nhà thiết kế (Designer HITL Portal):**\n   - Khi giao diện vượt qua vòng lặp QA tự động, một PR được đẩy lên cổng phê duyệt trực quan.\n   - Nhà thiết kế thực tế (Human Designer) có thể click chọn giữa các trạng thái giao diện (loading, hover, error) để kiểm tra độ mượt mà.\n   - Nếu từ chối, designer để lại feedback dạng hình ảnh và comment. Phản hồi này được chuyển trực tiếp vào Task Brief tiếp theo của Agent.\n\n### 13.4. Các cơ chế kiểm soát tất định (Deterministic Controls)\n\n- **Strict Class Name Allowlist:** Linter cấu hình chỉ cho phép import tokens từ thư viện chỉ định. Mọi cấu trúc CSS tùy biến ngoài config đều bị coi là lỗi compile.\n- **State Matrix Verification:** Bộ test bắt buộc phải trigger tất cả các trạng thái tương tác (`:hover`, `:focus`, `:disabled`) và các kịch bản bất thường (dữ liệu rỗng - empty state, dữ liệu lỗi API - error state) để chụp screenshot kiểm chứng. Không bỏ sót bất kỳ trạng thái nào của giao diện.\n- **Figma API Sync Schema:** Sử dụng ID phần tử Figma làm định danh (Figma Component Key) trong code để liên kết trực tiếp thiết kế Figma với component tương ứng trong mã nguồn, giúp tracking chính xác khi thiết kế thay đổi.\n\n### 13.5. Tiêu chí pass/fail\n\n- **Pass:** Không hard-code style, 100% styles sử dụng token, vượt qua linter Tailwind/CSS, screenshot diff dưới 0.5% ở tất cả 3 viewports và 5 trạng thái tương tác, được ký duyệt (sign-off) bởi Designer trên cổng HITL.\n- **Fail:** Tự định nghĩa class mới, dùng hex color trực tiếp, lệch spacing token, vỡ layout responsive, thiếu trạng thái lỗi/tải (error/loading), hoặc visual diff vượt quá 0.5% mà chưa có phê duyệt ngoại lệ của Designer.\n\n### 13.6. Checklist triển khai UI/UX\n\n- [ ] Figma variables được đồng bộ tự động thành file tokens cấu hình trong dự án.\n- [ ] Linter cài đặt rules chặn cứng inline-style và các class CSS tự do (non-token).\n- [ ] Cấu hình visual regression test tự động trên CI (Playwright/Chromatic/Percy) tích hợp vòng phản hồi (feedback loop) cho Agent.\n- [ ] Xây dựng ma trận kiểm tra đầy đủ trạng thái (default, hover, active, focus, loading, error, empty) cho mọi component mới.\n- [ ] Thiết lập cổng HITL Designer Review Sign-off bắt buộc làm Gate cuối cùng trước khi merge PR.\n\n## 14. Kiến trúc — khóa quyết định lớn trước khi agent build\n\n### 14.1. Rủi ro gốc\n\nKiến trúc là nhóm quyết định có chi phí sửa sai rất cao. Một module boundary sai, data ownership mơ hồ, dependency ngược chiều, hoặc lựa chọn storage/eventing sai có thể làm toàn bộ hệ thống khó mở rộng sau này. Agent thường tối ưu để hoàn thành task trước mắt, nên dễ chọn giải pháp cục bộ mà không thấy hệ quả dài hạn.\n\n### 14.2. Vì sao AI agent dễ sai\n\nAgent bị giới hạn bởi context hiện có và mục tiêu ngắn hạn trong prompt. Nếu prompt yêu cầu \"implement feature\", agent sẽ ưu tiên code chạy được, đôi khi bỏ qua reversibility, migration path, operational cost, security boundary hoặc khả năng test. Vì vậy kiến trúc phải là **đầu vào đã duyệt**, không phải kết quả phụ trong lúc coding.\n\n### 14.3. Cơ chế kiểm soát: Architecture Freeze Before Agent Build\n\nTrước khi agent implement, phải có cổng **Architecture Freeze Before Agent Build**. \"Freeze\" không có nghĩa là không bao giờ đổi, mà là mọi quyết định kiến trúc quan trọng đã được ghi lại, phản biện, duyệt và có đường quay lại nếu giả định sai.\n\n```mermaid\nflowchart LR\n    S[Spec hành vi] --> A[Architecture proposal]\n    A --> ADR[ADR + alternatives + consequences]\n    ADR --> DB[Debate review<br/>architect, security, scale, cost, domain]\n    DB -->|đạt| FR[Architecture freeze]\n    DB -->|chưa đạt| A\n    FR --> T[Task breakdown]\n    T --> I[Agent implementation]\n    I --> G[Architecture guardrails<br/>dependency, schema, security, tests]\n    G -->|vi phạm| I\n    G -->|đạt| PR[PR review]\n    style FR fill:#e8f5e9,stroke:#2e7d32\n    style DB fill:#fff3e0,stroke:#e65100\n```\n\nMẫu ADR tối thiểu:\n\n| Mục | Nội dung bắt buộc |\n|---|---|\n| **Context** | Vấn đề, ràng buộc, yêu cầu phi chức năng, giả định |\n| **Decision** | Quyết định được chọn và phạm vi áp dụng |\n| **Alternatives** | Các phương án bị loại và lý do |\n| **Consequences** | Tác động tới scale, cost, security, testability, vận hành |\n| **Rollback path** | Cách đảo quyết định hoặc giảm thiệt hại nếu sai |\n\n### 14.4. Review đa vai\n\nMỗi quyết định kiến trúc quan trọng nên được phản biện bởi các vai sau, có thể là người thật hoặc agent đóng vai, nhưng người chịu trách nhiệm cuối phải là architect/human lead:\n\n- **Architect:** ranh giới module, coupling, dependency direction, extensibility.\n- **Security:** threat model, privilege boundary, data exposure, audit trail.\n- **Scalability:** throughput, latency, state, queueing, cache, bottleneck.\n- **Maintainability:** cognitive load, testability, migration, versioning.\n- **Cost:** chi phí hạ tầng, token/tool calls, vận hành 24/7.\n- **Domain expert:** logic nghiệp vụ, exception flow, compliance, thuật ngữ.\n\n### 14.5. Tiêu chí pass/fail\n\n- Pass nếu spec rõ, ADR được duyệt, module boundary và data ownership rõ, dependency direction kiểm được, threat model có mitigation, rollback path tồn tại, test strategy gắn với kiến trúc.\n- Fail nếu agent phải tự quyết định storage, event schema, API boundary, permission model, hoặc dependency giữa module trong lúc implement.\n\n### 14.6. Checklist triển khai kiến trúc\n\n- [ ] Spec được duyệt trước khi lập task.\n- [ ] ADR tồn tại cho mọi quyết định khó đảo.\n- [ ] Architecture review đa vai hoàn tất.\n- [ ] Dependency rules hoặc architecture tests nằm trong CI.\n- [ ] Threat model và quyền hạn được ánh xạ sang guardrail.\n- [ ] Không giao task implement khi boundary/interface còn mơ hồ.\n\n## 15. Module lớn — chia nhỏ theo domain mà không mất logic\n\n### 15.1. Rủi ro gốc\n\nVới phần mềm lớn, nhiều nghiệp vụ, rủi ro không nằm ở việc agent viết được từng mảnh code hay không. Rủi ro nằm ở việc các mảnh đó không khớp với nhau: cùng một khái niệm nghiệp vụ bị định nghĩa khác nhau, dữ liệu có nhiều owner, workflow đứt ở biên module, lỗi không được propagate đúng, hoặc thay đổi một module làm vỡ module khác mà test đơn vị không bắt được.\n\n### 15.2. Vì sao AI agent dễ sai\n\nKhông một prompt đơn lẻ nào giữ được toàn bộ bức tranh của hệ thống lớn. Nếu chia task theo màn hình hoặc theo file kỹ thuật, agent có thể tối ưu từng phần nhưng làm mất logic domain. Cách chia đúng là chia theo **bounded context/domain capability**, sau đó khóa bằng contract.\n\n### 15.3. Cơ chế kiểm soát: domain boundary + interface contract\n\nMỗi module lớn phải có contract rõ trước khi agent sửa code. Contract không chỉ là API endpoint; nó là hợp đồng vận hành giữa các phần của hệ thống.\n\n```mermaid\nflowchart TB\n    DM[Domain map<br/>bounded contexts] --> IC[Interface contracts<br/>API, schema, event, errors]\n    IC --> AG[AGENTS.md phân tầng]\n    AG --> M1[Module A implementation]\n    AG --> M2[Module B implementation]\n    AG --> M3[Module C implementation]\n    M1 --> CT[Contract tests]\n    M2 --> CT\n    M3 --> CT\n    CT --> IT[Integration tests]\n    IT --> E2E[E2E nghiệp vụ]\n    E2E -->|đạt| OK[Ready to merge]\n    E2E -->|fail| FIX[Fix boundary or implementation]\n    style DM fill:#e3f2fd,stroke:#1565c0\n    style IC fill:#e8f5e9,stroke:#2e7d32\n    style CT fill:#fff3e0,stroke:#e65100\n```\n\nMột module contract tối thiểu cần có:\n\n- **Domain responsibility:** module sở hữu năng lực nghiệp vụ nào, không sở hữu gì.\n- **API/schema/event:** đầu vào, đầu ra, versioning, backward compatibility.\n- **Data ownership:** bảng/collection/entity nào thuộc module, ai được ghi, ai chỉ được đọc.\n- **Error model:** lỗi nghiệp vụ, lỗi kỹ thuật, retryability, idempotency.\n- **Security boundary:** quyền cần có, dữ liệu nhạy cảm, audit requirement.\n- **Test contract:** consumer-driven contract tests, integration tests, E2E flows liên quan.\n\n### 15.4. `AGENTS.md` phân tầng như bản đồ vận hành cho agent\n\n`AGENTS.md` nên phản chiếu cấu trúc hệ thống:\n\n- Repo root: nguyên tắc toàn cục, coding standard, test command, security rules.\n- Domain/module: mục tiêu nghiệp vụ, boundary, contract, thuật ngữ, dependency allowed/forbidden.\n- Package/submodule: hướng dẫn local, test cụ thể, convention, known pitfalls.\n\nAgent đọc file gần phạm vi đang sửa nhất, nhưng vẫn bị ràng buộc bởi nguyên tắc ở cấp cao hơn. Đây là cách giữ ngữ cảnh đủ nhỏ để agent xử lý, nhưng vẫn không mất liên kết toàn cục.\n\n### 15.5. Tiêu chí pass/fail\n\n- Pass nếu mỗi module có owner, boundary, contract, test và E2E flow rõ; thay đổi module không phá consumer; thuật ngữ nghiệp vụ dùng nhất quán.\n- Fail nếu task chỉ ghi \"làm màn hình X\" mà không xác định domain owner, data owner, contract, error flow, hoặc E2E nghiệp vụ.\n\n### 15.6. Checklist triển khai module lớn\n\n- [ ] Có domain map/bounded context trước khi chia task.\n- [ ] Mỗi module có contract về API/schema/event/data/error/security.\n- [ ] `AGENTS.md` tồn tại ở root và module quan trọng.\n- [ ] Contract tests chạy ở mọi biên module.\n- [ ] E2E flows đại diện cho nghiệp vụ thật, không chỉ test kỹ thuật.\n- [ ] Mỗi bug production tạo thêm một test/eval hồi quy.\n\n## 16. Multi-agent — song song tốc độ cao nhưng không mất kiểm soát\n\n### 16.1. Rủi ro gốc\n\nMulti-agent tăng tốc vì nhiều luồng thực thi chạy cùng lúc, nhưng cũng nhân rủi ro: hai agent sửa cùng file, hai cách hiểu khác nhau về cùng một contract, test bị viết trùng hoặc hở, style lệch giữa nhánh, chi phí tăng nhanh, và merge cuối cùng trở thành điểm nghẽn.\n\n### 16.2. Vì sao AI agent dễ sai\n\nMỗi agent có context riêng và tối ưu cho task riêng. Nếu không có supervisor, ownership map và merge protocol, các agent sẽ tạo ra nhiều lời giải cục bộ nhưng khó tích hợp. Song song chỉ có giá trị khi các ranh giới đã rõ và chất lượng được kiểm ở điểm hợp nhất.\n\n### 16.3. Kiến trúc Multi-Agent hướng Domain song song (Domain-Driven Multi-Agent - DDMA)\n\nĐể tăng tốc độ phát triển cho phần mềm nhiều nghiệp vụ, hệ thống phức tạp mà vẫn bảo đảm tính đồng bộ logic và ranh giới hệ thống, chúng tôi áp dụng kiến trúc DDMA.\n\n```mermaid\nflowchart TB\n    SUP[Supervisor Agent] -->|Phân rã & gán Task theo Domain| Map[Task Ownership Map]\n    \n    Map -->|Cách ly Worktree| AgentA[Coding Agent A - Domain Khách Hàng]\n    Map -->|Cách ly Worktree| AgentB[Coding Agent B - Domain Hóa Đơn]\n    \n    AgentA <-->|Thống nhất Contract trước| SharedContract[(API Spec / Event Schema Registry)]\n    AgentB <-->|Thống nhất Contract trước| SharedContract\n    \n    subgraph ExecutionA[Nhánh A - Sandbox A]\n        AgentA --> CodeA[Code Domain A]\n        CodeA --> PactA[Contract Tests & Unit tests]\n    end\n    \n    subgraph ExecutionB[Nhánh B - Sandbox B]\n        AgentB --> CodeB[Code Domain B]\n        CodeB --> PactB[Contract Tests & Unit tests]\n    end\n    \n    PactA & PactB --> CI[CI Integration Gate]\n    CI -->|Xung đột API / Test Fail| Debate[Agentic Debate Protocol - Tranh biện tự động]\n    Debate -->|Tự điều chỉnh spec thành công| CI\n    Debate -->|Thất bại 3 vòng| Human[Tech Lead HITL Checkpoint]\n    CI -->|Pass E2E & Contracts| Merge[Master Merge Gate]\n```\n\n#### 16.3.1. Nguyên tắc cách ly không gian làm việc (Workspace Isolation)\n- **Domain Bound Worktrees:** Mỗi agent làm việc trên một nhánh git và Git Worktree hoàn toàn cô lập.\n- **File Access Lock:** Phân quyền sửa đổi tệp dựa trên cấu trúc thư mục của Bounded Context (DDD). Agent phụ trách domain *Hóa Đơn* bị cấm tuyệt đối bởi git pre-commit hook không cho phép sửa đổi mã nguồn nằm trong thư mục của domain *Khách Hàng*.\n- **Database Schema Lock:** Database schema được cố định trước khi phân công. Agent không được tự ý sửa database schema khi chưa có migration file được duyệt trước bởi Architect (Con người).\n\n#### 16.3.2. Cơ chế Contract-First và Khóa Tích hợp (Integration Lock)\n- **API & Event Specs as Hard Gates:** Trước khi thực thi viết logic, các sub-agents bắt buộc phải giao tiếp thông qua một registry chung để thống nhất interface: API Spec (OpenAPI/GraphQL/Protobuf) hoặc Event Schema (Avro/JSON Schema).\n- **Consumer-Driven Contract Testing (Pact):** Mọi thay đổi ở client hoặc server đều phải chạy qua bộ kiểm thử contract. Nếu domain A thay đổi kiểu dữ liệu trả về của một trường làm ảnh hưởng đến domain B, Pact test sẽ lập tức báo đỏ và chặn merge.\n\n#### 16.3.3. Cơ chế tự động giải quyết xung đột (Agentic Debate Protocol)\nKhi phát hiện xung đột hoặc lỗi kiểm thử contract giữa hai domain chạy song song:\n1. **Khởi chạy Nghị trình Tranh biện (Start Debate):** Agent Supervisor sẽ tự động khóa hai nhánh và kéo hai Agent liên quan vào một phiên chat nội bộ (Debate Room).\n2. **Đối thoại Spec (Context Sharing):** Supervisor cung cấp chi tiết lỗi test Pact, log lỗi, và specs hiện tại của hai bên.\n3. **Căn chỉnh tự động (Auto-Reconciliation):** Các sub-agents sẽ đưa ra lý do, đề xuất chỉnh sửa schema hoặc đổi tên trường dữ liệu. Quy trình này lặp lại tối đa 3 vòng.\n4. **Phê duyệt hoặc Leo thang (Escalation):** Nếu tự căn chỉnh thành công và test pass, Supervisor ghi nhận spec mới và tiếp tục chạy CI. Nếu sau 3 vòng vẫn xung đột logic nghiệp vụ sâu, Supervisor sẽ đóng băng task và gửi cảnh báo đỏ lên Technical Lead (Con người) để phân xử.\n\n### 16.4. Phân vai Claude, Codex, Gemini\n\n| Công cụ | Vai trò phù hợp | Không nên giao |\n|---|---|---|\n| **Claude** | Reasoning sâu, kiến trúc, phản biện, planning, review chất lượng, điều phối Debate Room | Tự ý quyết kiến trúc nếu chưa có human approval |\n| **Codex** | Implementation, refactor có phạm vi rõ, viết test, sửa lỗi cục bộ trong Sandbox | Tự mở rộng scope hoặc sửa chồng lấn nhiều module |\n| **Gemini** | Đọc ngữ cảnh lớn, phân tích tài liệu/codebase rộng, đa phương thức, kiểm tra sự đồng nhất logic toàn cục | Merge cuối hoặc quyết định contract khi chưa được duyệt |\n\n### 16.5. Quy trình song song an toàn\n\n1. **Khóa Spec & Contract trước:** Xác định API/Event spec và lưu vào Schema Registry.\n2. **Lập Task Ownership Map:** Phân định rõ ranh giới thư mục hoạt động cho từng Agent.\n3. **Phân phối Isolated Worktrees:** Kích hoạt các agent thực thi độc lập trên sandbox.\n4. **Chạy Contract Tests trên từng Branch:** Đảm bảo nhánh riêng luôn xanh với contract chung.\n5. **Kích hoạt Agentic Debate:** Khi có xung đột API, tự động đối thoại để sửa đổi spec.\n6. **Master Merge Gate:** Con người (Tech Lead) duyệt PR chỉ khi 100% unit tests, contract tests, và E2E nghiệp vụ thành công.\n\n### 16.6. Tiêu chí pass/fail\n\n- **Pass:** Mỗi agent đi đúng domain boundary, không sửa file ngoài danh mục phân quyền, 100% Contract Tests và Integration Tests đạt yêu cầu, giải quyết xung đột qua Debate Room thành công hoặc được Tech Lead ký duyệt.\n- **Fail:** Tự sửa mã nguồn của domain khác, thay đổi database schema ngoài kế hoạch, không qua được Pact test, hoặc xảy ra xung đột API mà không giải quyết được và trôi nổi không báo cáo.\n\n### 16.7. Checklist triển khai multi-agent\n\n- [ ] Có supervisor/human lead chịu trách nhiệm phân việc và merge.\n- [ ] Thiết lập Git pre-commit hooks chặn sửa đổi tệp ngoài domain boundary được gán.\n- [ ] Chốt toàn bộ API/Event contracts trước khi chia nhánh cho agents.\n- [ ] Cài đặt framework Contract Testing (như Pact) tích hợp vào luồng CI của từng nhánh.\n- [ ] Cấu hình Agentic Debate Protocol tự động giải quyết xung đột giao tiếp API.\n- [ ] Merge chỉ sau khi tất cả các kiểm thử unit, contract, integration và E2E đều đạt chỉ số xanh.\n\n## 17. Checklist enterprise sau khi bổ sung Phần II\n\n**UI/UX**\n- [ ] Agent không tạo UI ngoài design system nếu chưa có approval.\n- [ ] Token, component, visual regression, accessibility, responsive checks đều có trong pipeline.\n- [ ] Designer checkpoint áp dụng cho layout/component/interaction mới.\n\n**Kiến trúc**\n- [ ] Architecture Freeze Before Agent Build được áp dụng cho quyết định lớn.\n- [ ] ADR có context, decision, alternatives, consequences, rollback path.\n- [ ] Review đa vai bao gồm architect, security, scalability, maintainability, cost, domain expert.\n\n**Module lớn**\n- [ ] Chia theo bounded context/domain capability, không chỉ theo màn hình.\n- [ ] Mỗi module có contract về API/schema/event/data ownership/error model/security.\n- [ ] `AGENTS.md` phân tầng giúp agent giữ đúng ngữ cảnh local và nguyên tắc global.\n\n**Multi-agent**\n- [ ] Supervisor + isolated sub-agents là mô hình mặc định.\n- [ ] Claude/Codex/Gemini được phân vai theo điểm mạnh, không dùng thay human approval.\n- [ ] Worktree isolation, ownership map, CI per branch và merge gate là bắt buộc.\n\n> **Ba nguyên tắc vàng sau khi nâng cấp tài liệu:**\n> 1. *Con người sở hữu intent, architecture, design standard, contracts; agent sở hữu execution trong ràng buộc.*\n> 2. *Biến chuẩn chủ quan thành guardrail máy kiểm được: token, component contract, screenshot diff, ADR, contract test, eval.*\n> 3. *Tốc độ multi-agent chỉ có giá trị khi tích hợp được; tích hợp được nhờ boundary, ownership, isolation và merge gate.*\n\n---\n\n## Nguồn tham khảo\n\n- [Agentic SDLC: How AI agents are changing SDLC — CodeRabbit](https://www.coderabbit.ai/guides/agentic-sdlc)\n- [Agentic SDLC: What Changes When Agents Run Development — Augment Code](https://www.augmentcode.com/guides/agentic-sdlc)\n- [Agentic Development Lifecycle (ADLC): A New Model Beyond SDLC — EPAM](https://www.epam.com/insights/ai/blogs/agentic-development-lifecycle-explained)\n- [How agentic AI will reshape engineering workflows in 2026 — CIO](https://www.cio.com/article/4134741/how-agentic-ai-will-reshape-engineering-workflows-in-2026.html)\n- [An AI-led SDLC: End-to-End Agentic SDLC with Azure and GitHub — Microsoft Community Hub](https://techcommunity.microsoft.com/blog/appsonazureblog/an-ai-led-sdlc-building-an-end-to-end-agentic-software-development-lifecycle-wit/4491896)\n- [Agentic AI Software Development Lifecycle: Secure ADLC Playbook — Codebridge](https://www.codebridge.tech/articles/agentic-ai-software-development-lifecycle-the-production-ready-playbook)\n- [What is Agentic SDLC — Sonar](https://www.sonarsource.com/resources/library/what-is-agentic-sdlc/)\n- [State of AI Agents 2026: Governance, Evaluation and Scale — Lovelytics](https://lovelytics.com/post/state-of-ai-agents-2026-lessons-on-governance-evaluation-and-scale/)\n- [Agent observability: The complete guide for 2026 — Braintrust](https://www.braintrust.dev/articles/agent-observability-complete-guide-2026)\n- [Agent Observability 2026: Evals, Traces, Cost Guide — Digital Applied](https://www.digitalapplied.com/blog/agent-observability-2026-evals-traces-cost-guide)\n- [Best AI Observability Tools for Autonomous Agents in 2026 — Arize](https://arize.com/blog/best-ai-observability-tools-for-autonomous-agents-in-2026/)\n- [Running Automated Evals for AI Agents — DEV Community](https://dev.to/kuldeep_paul/running-automated-evals-for-ai-agents-a-practical-guide-for-engineering-and-product-teams-3pb8)\n- [Agentic AI evaluation strategies — Vector Institute](https://vectorinstitute.ai/agentic-ai-evaluation-strategies/)\n- [Evaluating AI agents: Real-world lessons at Amazon — AWS](https://aws.amazon.com/blogs/machine-learning/evaluating-ai-agents-real-world-lessons-from-building-agentic-systems-at-amazon/)\n- [Agent-as-a-Judge: Evaluate Agents with Agents — arXiv](https://arxiv.org/pdf/2410.10934)\n- [OWASP Top 10 for Agentic Applications 2026 — DeepTeam / Confident AI](https://www.trydeepteam.com/docs/frameworks-owasp-top-10-for-agentic-applications)\n- [OWASP Top 10 Agents & AI Vulnerabilities (2026 Cheat Sheet)](https://blog.alexewerlof.com/p/owasp-top-10-ai-llm-agents)\n- [Self-Improving AI Agents: The 2026 Guide — o-mega](https://o-mega.ai/articles/self-improving-ai-agents-the-2026-guide)\n- [Top 5 AI Agent Monitoring Platforms in 2026 — Maxim AI](https://www.getmaxim.ai/articles/top-5-ai-agent-monitoring-platforms-in-2026/)\n"
+  },
+  {
+    "id": "agentic_sdlc_master_map",
+    "category": "Core Guides",
+    "title": "Bản đồ Quy trình & Luồng Vận hành Agentic SDLC (Master Visual Map)",
+    "path": "Agentic_SDLC_Master_Map.md",
+    "content": "# Bản đồ Quy trình & Luồng Vận hành Agentic SDLC (Master Visual Map)\n\nTài liệu này tổng hợp và trực quan hóa toàn bộ vòng đời phát triển phần mềm bằng AI Agent (Agentic SDLC). Các sơ đồ dưới đây giúp bạn dễ dàng hình dung từ khâu thiết lập ý định, lập kế hoạch, viết code, kiểm thử, duyệt tích hợp (Merge Gate) cho đến giám sát vận hành 24/7 và cơ chế tự động học hỏi, cải tiến liên tục.\n\n---\n\n## 1. Bản đồ Toàn cảnh Quy trình Agentic SDLC (Master Landscape Map)\nSơ đồ dưới đây bao quát 8 pha trong vòng đời phát triển Agentic (ADLC), làm rõ mối quan hệ giữa **các hoạt động**, **các bên chịu trách nhiệm (Vai trò)**, **các Artifact sinh ra** và **cách con người kiểm soát (HITL)**.\n\n```mermaid\nflowchart TB\n    subgraph Phase1[\"Pha 1: Đặc tả ý định (Intent & Constraints)\"]\n        direction TB\n        P1_In[\"Yêu cầu nghiệp vụ (Business Requirement)\"] --> P1_Act[\"Đặc tả mục tiêu, tiêu chí hoàn thành (DoD), ràng buộc & ngân sách\"]\n        P1_Act --> P1_Art[\"Artifacts:<br/>- Feature Spec<br/>- UI/Component Contracts<br/>- Module Contracts\"]\n    end\n\n    subgraph Phase2[\"Pha 2: Lập kế hoạch (Planning & Phân rã)\"]\n        direction TB\n        P2_In[\"Artifacts của Pha 1\"] --> P2_Act[\"Phân tách nhiệm vụ thành các task nhỏ, lập sơ đồ sở hữu (Ownership Map) & xác định rủi ro\"]\n        P2_Act --> P2_Art[\"Artifacts:<br/>- Agent Task Brief<br/>- ADR (Architecture Decision Record)\"]\n    end\n\n    subgraph Phase3[\"Pha 3: Thực thi (Build / Action)\"]\n        direction TB\n        P3_In[\"Task Brief & Constraints\"] --> P3_Act[\"Thực thi code/thao tác trong nhánh cô lập (Isolated Worktree/Branch)\"]\n        P3_Act --> P3_Art[\"Artifacts:<br/>- Mã nguồn (Source Code)<br/>- Tests mới\"]\n    end\n\n    subgraph Phase4[\"Pha 4: Kiểm thử & Đánh giá (Validation & Evals)\"]\n        direction TB\n        P4_In[\"Source Code & Tests\"] --> P4_Act[\"Chạy CI tự động: Unit Evals, LLM-as-judge Regression, Visual Regression, Contract Tests\"]\n        P4_Act --> P4_Art[\"Artifacts:<br/>- Báo cáo kết quả Evals & Tests\"]\n    end\n\n    subgraph Phase5[\"Pha 5: Review & Duyệt (Human Checkpoint - HITL)\"]\n        direction TB\n        P5_In[\"Báo cáo Evals\"] --> P5_Act[\"Con người duyệt tại checkpoint đối với các hành động rủi ro trung bình/cao\"]\n        P5_Act --> P5_Art[\"Artifacts:<br/>- Merge Gate Report\"]\n    end\n\n    subgraph Phase6[\"Pha 6: Triển khai (Deploy / Ship)\"]\n        direction TB\n        P6_In[\"Merge Gate Approved\"] --> P6_Act[\"Tích hợp mã nguồn vào nhánh chính & deploy thông qua cổng chất lượng tự động\"]\n        P6_Act --> P6_Art[\"Artifacts:<br/>- Release Note<br/>- Production Deployment\"]\n    end\n\n    subgraph Phase7[\"Pha 7: Vận hành & Quan sát (Operate 24/7)\"]\n        direction TB\n        P7_In[\"Production Deployment\"] --> P7_Act[\"Vận hành 24/7, giám sát traces OpenTelemetry, metrics chi phí & độ tin cậy\"]\n        P7_Act --> P7_Art[\"Artifacts:<br/>- Telemetry Traces<br/>- Dashboards & Alerts\"]\n    end\n\n    subgraph Phase8[\"Pha 8: Học & Tự cải thiện (Learn & Self-Improvement)\"]\n        direction TB\n        P8_In[\"Telemetry Traces & Logs\"] --> P8_Act[\"Phân tích lỗi tự động, đề xuất nâng cấp Prompt/Skill, thử nghiệm sandbox\"]\n        P8_Act --> P8_Art[\"Artifacts:<br/>- Prompt/Skill cập nhật<br/>- Memory bổ sung\"]\n    end\n\n    %% Kết nối giữa các Pha\n    Phase1 --> Phase2\n    Phase2 --> Phase3\n    Phase3 --> Phase4\n    Phase4 --> Phase5\n    Phase5 -->|Duyệt| Phase6\n    Phase5 -->|Từ chối / Yêu cầu sửa| Phase2\n    Phase6 --> Phase7\n    Phase7 --> Phase8\n    Phase8 -.->|\"Cập nhật ý định/ràng buộc (Vòng lặp học hỏi)\"| Phase1\n    Phase7 -.->|\"Sự cố hoặc Drift\"| Phase4\n\n    %% Styling\n    classDef human fill:#d1e7dd,stroke:#0f5132,stroke-width:2px;\n    classDef agent fill:#cff4fc,stroke:#087990,stroke-width:2px;\n    classDef gate fill:#fff3cd,stroke:#664d03,stroke-width:2px;\n    classDef learn fill:#f8d7da,stroke:#842029,stroke-width:2px;\n\n    class Phase1,Phase5 human;\n    class Phase2,Phase3 agent;\n    class Phase4,Phase6 gate;\n    class Phase7,Phase8 learn;\n```\n\n---\n\n## 2. Sơ đồ Trình tự Phát triển Tính năng (Feature Development Sequence Diagram)\nSơ đồ trình tự thời gian thể hiện sự phối hợp chặt chẽ giữa các vai trò Con người, AI Supervisor, AI Coding Agents, hệ thống kiểm thử CI/CD và giám sát vận hành:\n\n```mermaid\nsequenceDiagram\n    autonumber\n    actor PO as Product Owner\n    actor Arch as Architect / Designer\n    actor Dev as Developer / Lead\n    participant Sup as Supervisor Agent\n    participant Agent as Coding Agent\n    participant CI as CI/CD & Evals\n    participant Obs as Observe System\n\n    Note over PO, Dev: Giai đoạn 1: Chuẩn bị & Đóng băng\n    PO->>Arch: Gửi Feature Spec & Nghiệp vụ\n    Arch->>Arch: Thiết lập Design Tokens & ADR\n    Arch->>Dev: Đóng băng kiến trúc (Architecture Freeze)\n    Dev->>Sup: Giao Task Brief, Contracts & Ràng buộc\n\n    Note over Sup, Agent: Giai đoạn 2: Lập kế hoạch & Thực thi\n    Sup->>Sup: Lập kế hoạch phân rã Task & Ownership Map\n    Sup->>Agent: Tạo isolated branch & Giao Task\n    loop Tự sửa lỗi (Self-Correction Loop)\n        Agent->>Agent: Viết code trong Sandbox\n        Agent->>Agent: Chạy test nội bộ & Tự sửa lỗi\n    end\n    Agent->>Sup: Hoàn thành nhiệm vụ & Đẩy mã nguồn\n\n    Note over Sup, CI: Giai đoạn 3: Kiểm định tự động & Duyệt\n    Sup->>CI: Kích hoạt Pipeline Evals\n    activate CI\n    CI->>CI: Chạy Unit Evals & Contract Tests\n    CI->>CI: Chạy Visual Regression & LLM-as-judge\n    CI-->>Sup: Báo cáo kết quả kiểm tra\n    deactivate CI\n    Sup->>Sup: Tạo Merge Gate Report\n    Sup->>Dev: Gửi PR & Merge Gate Report (HITL Checkpoint)\n    alt Đạt chất lượng & Duyệt\n        Dev->>CI: Xác nhận Merge PR & Deploy\n        CI->>Obs: Deploy lên Production thành công\n    else Thất bại hoặc Cần điều chỉnh\n        Dev->>Sup: Phản hồi lỗi & Từ chối merge\n        Sup->>Agent: Yêu cầu sửa đổi kèm feedback\n    end\n\n    Note over Obs, Dev: Giai đoạn 4: Vận hành & Giám sát 24/7\n    Obs->>Obs: Tracing OTel GenAI & Theo dõi chi phí\n    alt Sự cố / Runaway Loop / Trôi chất lượng (Drift)\n        Obs->>Obs: Kích hoạt Circuit Breaker / Fallback\n        Obs-->>Dev: Alert cảnh báo lỗi để con người xử lý (HITL)\n    end\n```\n\n---\n\n## 3. Sơ đồ Trạng thái Nhiệm vụ của Agent (Agent Task Lifecycle State Diagram)\nTheo dõi trạng thái của một nhiệm vụ dưới sự thực thi của AI Agent, bao gồm cả vòng lặp tự sửa lỗi (Self-Correction) và kiểm thử chất lượng:\n\n```mermaid\nstateDiagram-v2\n    [*] --> Created : Giao Task Brief\n    Created --> Planning : Xác thực ý định & ràng buộc\n    Planning --> InSandbox : Đã chốt kế hoạch thực thi\n\n    state InSandbox {\n        [*] --> Executing : Đọc/Viết file & Gọi Tool\n        Executing --> Compiling : Trình biên dịch/Linter\n        Compiling --> Executing : Có lỗi syntax (Tự sửa)\n        Compiling --> DoneCode : Compile thành công\n    }\n\n    InSandbox --> SelfTesting : Bắt đầu chạy test tự động\n    \n    state SelfTesting {\n        [*] --> RunningTests : Chạy bộ Test đơn vị\n        RunningTests --> FixingCode : Test thất bại\n        FixingCode --> RunningTests : Cập nhật code & chạy lại\n        RunningTests --> DoneTesting : 100% Test thành công\n    }\n\n    SelfTesting --> Evaluating : Chạy bộ Eval chất lượng nâng cao (Offline Evals)\n    \n    state Evaluating {\n        [*] --> UnitEvals : Chạy Unit Evals\n        UnitEvals --> LLM_Judge : Chạy LLM-as-judge\n        LLM_Judge --> ContractTests : Chạy Contract Tests\n        ContractTests --> PassedAll : Tất cả Evals đạt chỉ số baseline\n    }\n\n    Evaluating --> AwaitingReview : Đẩy PR & Gửi báo cáo Merge Gate\n    Evaluating --> Planning : Thất bại Evals (Thiếu ngữ cảnh/Chệch mục tiêu)\n    \n    AwaitingReview --> Approved : Con người chấp thuận (HITL)\n    AwaitingReview --> Planning : Con người từ chối (Góp ý/Thay đổi spec)\n    \n    Approved --> Merged : Thực hiện merge & đóng nhánh\n    Merged --> [*]\n```\n\n---\n\n## 4. Sơ đồ Kiến trúc Vận hành 24/7 & Xử lý lỗi (24/7 Operation & Error Recovery Architecture)\nMô tả cơ chế chạy liên tục của Agent trong môi trường Production cùng với các lớp phòng vệ (Guardrails) và khả năng tự đứng dậy (Error Recovery):\n\n```mermaid\nflowchart TB\n    %% Inputs and entry\n    Event[\"Sự kiện / API Request / Lịch biểu Cron\"] --> GuardIn[\"Lớp Guardrail đầu vào (Input Guardrails)<br/>- Lọc prompt injection<br/>- Kiểm tra policy quyền hạn<br/>- Phân loại ý đồ\"]\n\n    %% Core routing\n    GuardIn -->|Hợp lệ| AgentCore[\"Lõi Agent (Agent Core)<br/>- Lập kế hoạch (Reasoner)<br/>- Trí nhớ ngắn/dài hạn<br/>- Gọi Tools / APIs\"]\n    GuardIn -->|Vi phạm| Reject[\"Từ chối & Ghi log bảo mật\"]\n\n    %% Output verification\n    AgentCore --> GuardOut[\"Lớp Guardrail đầu ra (Output Guardrails)<br/>- Kiểm duyệt nội dung<br/>- Chặn hành động rủi ro cao<br/>- Lọc dữ liệu nhạy cảm (PII)\"]\n\n    %% Execution and results\n    GuardOut -->|Hợp lệ| Action[\"Hành động thực tế<br/>(Write database / Gọi API ngoài / Trả phản hồi)\"]\n    GuardOut -->|Vi phạm| SandboxFix[\"Chặn & Gửi lỗi ngược lại Agent để sửa đổi\"]\n\n    %% Observability Layer\n    AgentCore -. Trace dữ liệu .-> OTel[\"Tracing (OpenTelemetry GenAI)<br/>- Theo dõi chuỗi quyết định (Trace)<br/>- Ghi nhận Tool call & Token cost\"]\n    OTel --> EvalOnline[\"Online Evaluation<br/>- Lấy mẫu đánh giá thực tế (Sampling)\"]\n    EvalOnline --> Alerts[\"Hệ thống cảnh báo (Alerting)<br/>- Vòng lặp runaway loop?<br/>- Chi phí vượt hạn mức?<br/>- Lỗi hệ thống?\"]\n\n    %% Error Recovery loop\n    AgentCore -->|Gặp lỗi Tool/API/Logic| ErrRecover{\"Bộ Xử lý lỗi (Error Recovery)\"}\n    ErrRecover -->|Lỗi nhẹ / có thể tự sửa| Retry[\"Retry với Exponential Backoff & Fallback Tool\"]\n    Retry --> AgentCore\n    ErrRecover -->|Dependency hỏng liên tục| CircuitBreaker[\"Circuit Breaker<br/>- Tạm ngắt kết nối dịch vụ\"]\n    ErrRecover -->|Lỗi nặng / Runaway Loop| HITL[\"Escalate tới Con người (HITL)<br/>- Tạm dừng agent<br/>- Gửi thông báo khẩn cấp\"]\n\n    Alerts -->|Bất thường vượt ngưỡng| HITL\n\n    %% Styling\n    classDef core fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;\n    classDef security fill:#ffebee,stroke:#c62828,stroke-width:2px;\n    classDef obs fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;\n    classDef recovery fill:#fff3e0,stroke:#e65100,stroke-width:2px;\n\n    class AgentCore core;\n    class GuardIn,GuardOut,Reject security;\n    class OTel,EvalOnline,Alerts obs;\n    class ErrRecover,Retry,CircuitBreaker,HITL recovery;\n```\n\n---\n\n## 5. Sơ đồ Vòng lặp Tự cải thiện liên tục (Continuous Self-Improvement Loop)\nMô phỏng cách hệ thống tự học từ các dữ liệu vận hành thực tế mà vẫn đảm bảo tính an toàn cao (không gây lỗi regression):\n\n```mermaid\nflowchart LR\n    %% Main path\n    Prod[\"Vận hành thực tế (Production)\"] --> TraceLogs[\"Thu thập Traces & Logs (OTel)\"]\n    TraceLogs --> FailAnalysis[\"Phân tích lỗi tự động<br/>(Failure Analysis)\"]\n    FailAnalysis --> GenImprove[\"Đề xuất phương án cải tiến<br/>(Prompt / Skill / Memory / Tool mới)\"]\n    \n    %% Sandbox verification\n    GenImprove --> SandboxEval[\"Thử nghiệm trong Sandbox<br/>(Offline Eval Suite)\"]\n    SandboxEval --> RegressionCheck{\"Đạt chỉ số & không Regression?\"}\n    \n    %% Deployment Decisions\n    RegressionCheck -->|Không đạt| Discard[\"Hủy bỏ & phân tích lại lỗi\"]\n    RegressionCheck -->|Đạt| Canary[\"Triển khai dần (Canary / A-B Testing)\"]\n    \n    %% Return path\n    Canary --> CompareProd[\"So sánh hiệu năng thực tế\"]\n    CompareProd -->|Tốt hơn| MergeMain[\"Tích hợp chính thức vào Production\"]\n    CompareProd -->|Tệ hơn| Rollback[\"Rollback về phiên bản cũ\"]\n    \n    MergeMain --> Prod\n    Discard -.-> FailAnalysis\n    Rollback -.-> FailAnalysis\n\n    %% Styling\n    classDef sandbox fill:#fff3e0,stroke:#e65100,stroke-width:2px;\n    classDef decision fill:#f8d7da,stroke:#842029,stroke-width:2px;\n    classDef prod fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;\n\n    class SandboxEval sandbox;\n    class RegressionCheck,CompareProd decision;\n    class Prod,Canary,MergeMain prod;\n```\n\n---\n\n## 6. Bản đồ Cổng Kiểm soát Chất lượng Doanh nghiệp (Enterprise Quality Control Gates Map)\nTrực quan hóa ma trận kiểm soát chất lượng (Quality Control Matrix), đảm bảo các đầu ra kỹ thuật luôn tuân thủ các chuẩn chung trước khi tích hợp vào nhánh chính:\n\n```mermaid\nflowchart TB\n    %% Pillars\n    subgraph UIUX[\"Cổng Chất lượng UI/UX\"]\n        direction TB\n        Tokens[\"Design Tokens (Nguồn sự thật)\"] --> TokenLint[\"Linter kiểm tra hard-code style\"]\n        TokenLint --> VisualReg[\"Chạy Visual Regression (So sánh Screenshot Diff)\"]\n        VisualReg --> A11y[\"Kiểm tra Responsive & Accessibility\"]\n        A11y --> DesignerReview[\"Designer Checkpoint (Con người duyệt)\"]\n    end\n\n    subgraph Arch[\"Cổng Chất lượng Kiến trúc\"]\n        direction TB\n        ADR[\"Duyệt ADR + Rollback Path\"] --> ArchTests[\"Architecture Tests (Dependency Rules)\"]\n        ArchTests --> SecScans[\"Quét bảo mật (Security Scans & Threat Mitigation)\"]\n        SecScans --> ArchitectReview[\"Architect + Security Lead Review (HITL)\"]\n    end\n\n    subgraph Domain[\"Cổng Chất lượng Module lớn\"]\n        direction TB\n        Contracts[\"Xác lập Interface Contract & Domain Map\"] --> ContractTests[\"Consumer-Driven Contract Tests\"]\n        ContractTests --> IntegTests[\"Integration Tests (Kiểm thử liên hợp)\"]\n        IntegTests --> E2E[\"E2E Nghiệp vụ (Kiểm thử luồng đầu-cuối)\"]\n        E2E --> DomainReview[\"Domain Owner Review & Approval\"]\n    end\n\n    subgraph MultiAgent[\"Cổng Kiểm soát Multi-Agent\"]\n        direction TB\n        TaskMap[\"Lập Task Ownership Map & Isolated Branches\"] --> BranchCI[\"CI chạy độc lập trên từng Branch\"]\n        BranchCI --> BudgetGuard[\"Budget/Loop Guards & Trace Tracking\"]\n        BudgetGuard --> SupervisorReview[\"Supervisor / Tech Lead Review\"]\n    end\n\n    %% Convergence\n    DesignerReview --> MergeGate{\"Hộp Tích hợp chính (Master Merge Gate)\"}\n    ArchitectReview --> MergeGate\n    DomainReview --> MergeGate\n    SupervisorReview --> MergeGate\n\n    MergeGate -->|Tất cả thông qua| Ship[\"Merge & Release Code\"]\n    MergeGate -->|Có cổng thất bại| Block[\"Từ chối & Yêu cầu sửa đổi\"]\n\n    %% Styling\n    classDef gate fill:#fff3cd,stroke:#664d03,stroke-width:2px;\n    classDef check fill:#d1e7dd,stroke:#0f5132,stroke-width:2px;\n    classDef final fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;\n\n    class UIUX,Arch,Domain,MultiAgent gate;\n    class DesignerReview,ArchitectReview,DomainReview,SupervisorReview check;\n    class MergeGate,Ship final;\n```\n\n---\n\n## 7. Quy trình Figma-to-Code & Vòng lặp Visual QA tự động\nTrực quan hóa luồng đồng bộ biến thiết kế (Figma variables) thành mã nguồn dưới sự giám sát nghiêm ngặt của Linter và bộ test so sánh Visual Regression:\n\n```mermaid\nflowchart TD\n    Fig[\"Figma Designs / Variables\"] -->|Export JSON| Tokens[\"Tokens.json (Color, Spacing, Typography)\"]\n    Fig -->|Export Layout| Layout[\"Layout Blueprint JSON\"]\n    Tokens & Layout -->|Đầu vào nghiêm ngặt| Agent[\"Coding Agent Sandbox\"]\n    Agent -->|Tạo mã nguồn| Linter{\"Tailwind/CSS Linter Check\"}\n    Linter -->|Fail: Có Class tự chế / Hardcoded color| LintErr[\"Báo lỗi linter & Trích xuất dòng code\"]\n    LintErr -->|Feedback| Agent\n    Linter -->|Pass: Chỉ dùng classes token| Render[\"Playwright Headless Browser Render\"]\n    Render -->|Chụp Screenshot| RealImg[\"Giao diện thực (Actual Screen)\"]\n    Fig -->|Figma API Export Screenshot| DesignImg[\"Bản thiết kế mẫu (Baseline Screen)\"]\n    RealImg & DesignImg -->|Pixel Match Compare| DiffCheck{\"So sánh Visual Diff > 0.5%?\"}\n    DiffCheck -->|Có lệch| DiffImg[\"Tạo Ảnh Diff Tô Đỏ Lỗi + Sai Spacing CSS\"]\n    DiffImg -->|Feedback trực quan| Agent\n    DiffCheck -->|Không lệch| SignOff{\"Designer Portal Review (HITL)\"}\n    SignOff -->|Từ chối| SignReject[\"Ghi log feedback hình ảnh & comment\"]\n    SignReject -->|Feedback| Agent\n    SignOff -->|Duyệt| MergePR[\"Master Merge PR & Deploy\"]\n```\n\n---\n\n## 8. Kiến trúc Điều phối Multi-Agent song song hướng Domain (DDMA)\nMô hình chạy song song các Agent lập trình mà vẫn bảo vệ tính toàn vẹn của logic, ranh giới domain và tự động giải quyết các xung đột tích hợp:\n\n```mermaid\nflowchart TB\n    Supervisor[\"Supervisor Agent\"] -->|Phân rã Specs & ADR| OwnershipMap[\"Task Ownership Map\"]\n    \n    subgraph Isolation[\"Không gian cách ly (Workspace Isolation)\"]\n        WorktreeA[\"Git Branch & Worktree A<br/>(Chỉ được phép sửa /src/modules/billing/)\"]\n        WorktreeB[\"Git Branch & Worktree B<br/>(Chỉ được phép sửa /src/modules/customer/)\"]\n    end\n    \n    OwnershipMap -->|Gán & khóa thư mục sửa đổi| WorktreeA\n    OwnershipMap -->|Gán & khóa thư mục sửa đổi| WorktreeB\n    \n    SchemaLock[(\"Database Schema Locked<br/>(Không được sửa schema DB)\")] -.-> Isolation\n    \n    subgraph Registry[\"Shared Contract Registry\"]\n        APISpec[\"API Specs (OpenAPI/GraphQL)\"]\n        EventSpec[\"Event Schemas (Avro)\"]\n    end\n    \n    WorktreeA & WorktreeB <-->|Tuân thủ contract| Registry\n    \n    WorktreeA -->|Đẩy code| CI_GateA[\"Branch CI A (Pact Contract Tests & Unit tests)\"]\n    WorktreeB -->|Đẩy code| CI_GateB[\"Branch CI B (Pact Contract Tests & Unit tests)\"]\n    \n    CI_GateA & CI_GateB --> MasterGate{\"Master CI & Integration Gate\"}\n    \n    MasterGate -->|Xung đột contract / API fail| DebateRoom[\"Agentic Debate Room (Supervisor-moderated)\"]\n    DebateRoom -->|Vòng 1: Đề xuất & Chia sẻ context| DebateRoom\n    DebateRoom -->|Vòng 2: Căn chỉnh tự động specs| DebateRoom\n    DebateRoom -->|Vòng 3: Cập nhật code tương thích| DebateRoom\n    \n    DebateRoom -->|Giải quyết xong & tests pass| MasterGate\n    DebateRoom -->|Thất bại sau 3 vòng| TechLead[\"Technical Lead HITL Checkpoint\"]\n    \n    MasterGate -->|Pass all E2E & Contract tests| MasterMerge[\"Master Merge & Release\"]\n```\n```\n\n---\n\n> **Nguyên tắc cốt lõi của bản đồ:**\n> 1. **Con người nắm giữ ý định & cấu trúc:** Con người chịu trách nhiệm duyệt Spec, Kiến trúc (ADR), chuẩn giao diện (UI system) và hợp đồng module (Contracts).\n> 2. **AI Agent thực thi trong ràng buộc:** Agent tự hoạt động, viết code, sửa lỗi và thực hiện quy trình tự động trong phạm vi các hộp chất lượng và sandbox được thiết lập sẵn.\n> 3. **Vòng lặp đóng khép kín:** Mọi hành vi sai lệch trong vận hành (drift) hoặc sự cố sản phẩm đều là đầu vào để cải tiến hệ thống eval và huấn luyện/cải tiến kỹ năng của Agent một cách tự động.\n"
+  },
+  {
+    "id": "readme",
+    "category": "Core Guides",
+    "title": "Agentic SDLC Operating System",
+    "path": "README.md",
+    "content": "# Agentic SDLC Operating System\n\nRepo này biến `Agentic_SDLC_Deep_Dive.md` thành bộ tài liệu và mẫu triển khai Agentic SDLC cho phần mềm lớn, nhiều nghiệp vụ, có UI/UX phức tạp và nhiều AI agent cùng tham gia.\n\nNguyên lý điều hành:\n\n> Human owns intent, architecture, design standard, contracts; agents own execution inside constraints.\n\n## Dùng repo này như thế nào\n\n1. Xem [Bản đồ Quy trình trực quan](Agentic_SDLC_Master_Map.md) để có cái nhìn toàn cảnh bằng sơ đồ luồng.\n2. Đọc [overview](docs/00-overview.md) để hiểu cấu trúc bộ tài liệu.\n3. Chọn playbook theo vấn đề cần giải quyết:\n   - [Agentic SDLC lifecycle](docs/01-agentic-sdlc-lifecycle.md)\n   - [Enterprise delivery playbook](docs/02-enterprise-delivery-playbook.md)\n   - [Quality control matrix](docs/03-quality-control-matrix.md)\n   - [UI/UX control system](docs/04-ui-ux-control-system.md)\n   - [Architecture governance](docs/05-architecture-governance.md)\n   - [Large module delivery](docs/06-large-module-delivery.md)\n   - [Multi-agent orchestration](docs/07-multi-agent-orchestration.md)\n   - [Observability, evals, governance](docs/08-observability-evals-governance.md)\n   - [Adoption roadmap](docs/09-adoption-roadmap.md)\n4. Copy template phù hợp từ `templates/` vào repo sản phẩm thật.\n5. Dùng checklist trong `checklists/` trước khi merge hoặc release.\n6. Xem ví dụ hoàn chỉnh trong `examples/sample-enterprise-feature/`.\n\n## Artifact chính\n\n- [Agentic_SDLC_Master_Map.md](Agentic_SDLC_Master_Map.md): Bản đồ quy trình trực quan hóa bằng 6 sơ đồ Mermaid chi tiết.\n- [Agentic_SDLC_Deep_Dive.md](Agentic_SDLC_Deep_Dive.md): tài liệu nền tảng và giải thích sâu.\n- `docs/`: playbook vận hành ngắn theo từng chủ đề.\n- `templates/`: mẫu spec, ADR, UI contract, module contract, AGENTS.md, eval plan, merge gate.\n- `examples/`: một feature mẫu đi từ spec đến merge gate.\n- `checklists/`: checklist độc lập cho review và release.\n\n## Khi nào cần dùng template nào\n\n| Nhu cầu | Template nên dùng |\n|---|---|\n| Bắt đầu feature mới | `templates/specs/feature-spec.md` |\n| Chốt kiến trúc trước khi agent code | `templates/architecture/adr.md`, `templates/architecture/architecture-freeze-checklist.md` |\n| Làm UI/UX nhất quán | `templates/ui-ux/design-system-contract.md`, `templates/ui-ux/component-contract.md` |\n| Chia module lớn | `templates/modules/domain-boundary.md`, `templates/modules/module-contract.md` |\n| Chạy nhiều agent song song | `templates/agents/agent-task-brief.md`, `templates/agents/multi-agent-ownership-map.md` |\n| Chuẩn bị merge/release | `templates/agents/merge-gate-report.md`, `templates/quality/release-gate.md` |\n\n"
+  },
+  {
+    "id": "docs-00-overview",
+    "category": "Detailed Chapters",
+    "title": "Overview",
+    "path": "docs/00-overview.md",
+    "content": "# Overview\n\nBộ repo này là một \"operating system\" cho Agentic SDLC: không chỉ nói về AI agent, mà cung cấp tài liệu, template và checklist để điều hành AI agent trong dự án phần mềm thật.\n\n> [!TIP]\n> Bạn có thể xem bản đồ trực quan toàn cảnh với 6 sơ đồ Mermaid chi tiết tại [Bản đồ Quy trình trực quan (Master Visual Map)](../Agentic_SDLC_Master_Map.md) trước khi đi sâu vào từng tài liệu cụ thể dưới đây.\n\n## Mục tiêu\n\n- Giữ UI/UX đồng nhất bằng design system, component contract và visual regression.\n- Khóa kiến trúc bằng spec, ADR, architecture review và freeze checklist trước khi agent build.\n- Chia module lớn theo domain boundary và interface contract để không mất logic nghiệp vụ.\n- Chạy multi-agent song song bằng supervisor, isolated worktree, ownership map và merge gate.\n- Đưa observability, eval, governance và HITL vào quy trình giao hàng.\n\n## Luồng áp dụng chuẩn\n\n```mermaid\nflowchart LR\n    R[Requirement] --> S[Feature spec]\n    S --> A[Architecture + ADR]\n    A --> C[Contracts<br/>UI, module, data]\n    C --> T[Agent task brief]\n    T --> I[Agent implementation]\n    I --> G[Quality gates]\n    G --> M[Merge / release]\n    M --> O[Observe + learn]\n```\n\n## Vai trò\n\n| Vai trò | Sở hữu |\n|---|---|\n| Product owner | Intent, business outcome, acceptance criteria |\n| Architect | Architecture, ADR, module boundary, rollback path |\n| Designer lead | Design system, UX rule, component approval |\n| Domain owner | Business rules, workflow, data meaning |\n| Agent supervisor | Task split, agent scope, merge coordination |\n| AI agent | Implementation inside approved constraints |\n\n## Nguồn tham chiếu\n\nĐọc `Agentic_SDLC_Deep_Dive.md` khi cần hiểu sâu nền tảng, rủi ro, reasoning và bối cảnh. Dùng thư mục `docs/`, `templates/`, `checklists/` khi triển khai thực tế.\n\n"
+  },
+  {
+    "id": "docs-01-agentic-sdlc-lifecycle",
+    "category": "Detailed Chapters",
+    "title": "Agentic SDLC Lifecycle",
+    "path": "docs/01-agentic-sdlc-lifecycle.md",
+    "content": "# Agentic SDLC Lifecycle\n\nAgentic SDLC là vòng đời phát triển trong đó AI agent tham gia xuyên suốt từ đặc tả, lập kế hoạch, thực thi, kiểm thử, review, deploy đến vận hành.\n\n> [!TIP]\n> Bạn có thể xem bản đồ trực quan đầy đủ của vòng đời này (gồm Sơ đồ Master, Sơ đồ Trình tự tương tác và Sơ đồ Trạng thái nhiệm vụ của Agent) tại [Bản đồ Quy trình trực quan (Master Visual Map)](../Agentic_SDLC_Master_Map.md).\n\n## Vòng đời chuẩn\n\n```mermaid\nflowchart LR\n    I[Intent + constraints] --> P[Planning]\n    P --> B[Build / action]\n    B --> V[Validation + eval]\n    V --> H[Human checkpoint]\n    H --> D[Deploy / ship]\n    D --> O[Operate 24/7]\n    O --> L[Learn + improve]\n    L --> I\n```\n\n## Cổng kiểm soát\n\n- Intent phải có success criteria, out-of-scope, risk level và budget.\n- Planning phải tạo task nhỏ, dependency, test expectation và owner.\n- Build chỉ được chạy trong constraint đã duyệt.\n- Validation gồm test tất định, eval chất lượng, security và regression.\n- Human checkpoint áp dụng cho quyết định khó đảo hoặc tác động cao.\n- Operate cần trace, metrics, alert, sampling và failure analysis.\n\n## Artifact cần có\n\n- Feature spec.\n- Definition of Done.\n- ADR nếu có quyết định kiến trúc.\n- UI/component contract nếu có UI.\n- Module contract nếu chạm biên module.\n- Agent task brief nếu giao cho AI agent.\n- Merge gate report trước khi merge.\n\n"
+  },
+  {
+    "id": "docs-02-enterprise-delivery-playbook",
+    "category": "Detailed Chapters",
+    "title": "Enterprise Delivery Playbook",
+    "path": "docs/02-enterprise-delivery-playbook.md",
+    "content": "# Enterprise Delivery Playbook\n\nPlaybook này áp dụng khi dự án có phần mềm lớn, nhiều nghiệp vụ, nhiều nhóm hoặc nhiều agent cùng tham gia.\n\n> [!TIP]\n> Để trực quan hóa các cổng chất lượng và sơ đồ giao hàng doanh nghiệp, xem [Bản đồ Cổng Kiểm soát Chất lượng Doanh nghiệp (Sơ đồ 6)](../Agentic_SDLC_Master_Map.md#6-bản-đồ-cổng-kiểm-soát-chất-lượng-doanh-nghiệp-enterprise-quality-control-gates-map) và [Sơ đồ Trình tự Phát triển Tính năng (Sơ đồ 2)](../Agentic_SDLC_Master_Map.md#2-sơ-đồ-trình-tự-phát-triển-tính-năng-feature-development-sequence-diagram).\n\n## Nguyên tắc vận hành\n\n> Human owns intent, architecture, design standard, contracts; agents own execution inside constraints.\n\nAgent không tự quyết:\n\n- kiến trúc nền tảng;\n- chuẩn UI/UX mới;\n- ranh giới module;\n- schema/event contract;\n- quyền truy cập production;\n- merge khi gate chưa đạt.\n\n## Quy trình delivery\n\n1. Product owner viết feature spec và acceptance criteria.\n2. Architect duyệt kiến trúc, ADR và rollback path.\n3. Designer/domain owner duyệt UI contract hoặc module contract.\n4. Supervisor chia task, ownership map và phạm vi cho từng agent.\n5. Agent implement trong branch/worktree riêng.\n6. CI/manual gate kiểm test, eval, contract, UI screenshot và security.\n7. Human reviewer duyệt merge gate report.\n8. Production trace được lấy mẫu để bổ sung regression/eval.\n\n## Cách chia mức rủi ro\n\n| Mức | Ví dụ | Gate |\n|---|---|---|\n| Thấp | copy text, test nhỏ, refactor local | Agent tự làm + CI |\n| Trung bình | UI thay đổi, API nhỏ, module nội bộ | Reviewer + checklist |\n| Cao | kiến trúc, schema, permission, data migration | ADR + architecture freeze + human approval |\n| Không hoàn tác | xóa dữ liệu, gửi tiền, thay production policy | Human approval bắt buộc trước hành động |\n\n"
+  },
+  {
+    "id": "docs-03-quality-control-matrix",
+    "category": "Detailed Chapters",
+    "title": "Quality Control Matrix",
+    "path": "docs/03-quality-control-matrix.md",
+    "content": "# Quality Control Matrix\n\nMỗi rủi ro lớn phải có nguồn sự thật, guardrail tự động, checkpoint con người và tiêu chí pass/fail.\n\n> [!TIP]\n> Bản đồ trực quan của các cổng chất lượng được mô tả chi tiết tại [Bản đồ Cổng Kiểm soát Chất lượng Doanh nghiệp (Sơ đồ 6)](../Agentic_SDLC_Master_Map.md#6-bản-đồ-cổng-kiểm-soát-chất-lượng-doanh-nghiệp-enterprise-quality-control-gates-map).\n\n| Khu vực | Nguồn sự thật | Guardrail tự động | Checkpoint | Pass/fail |\n|---|---|---|---|---|\n| UI/UX | Design tokens, component library, UX guidelines | Token linter, component-only rule, screenshot diff, accessibility | Designer/product review | Không hard-code style, không lệch baseline ngoài ngưỡng, đủ states |\n| Architecture | Spec, ADR, principles, threat model | Dependency rules, architecture tests, security scans | Architect + security + domain lead | ADR duyệt, boundary rõ, rollback path có |\n| Module lớn | Domain map, contracts, data ownership, AGENTS.md | Contract tests, integration tests, E2E flows | Domain owner | Không phá contract, E2E nghiệp vụ đạt |\n| Multi-agent | Ownership map, branch/worktree policy, merge protocol | CI per branch, trace/cost/loop guard | Supervisor/human lead | Không sửa chồng lấn, không merge khi gate fail |\n| Observability | Trace schema, eval taxonomy, alert policy | Sampling, regression suite, cost/latency alerts | Ops/engineering lead | Có trace đầy đủ và failure feedback loop |\n\n## Cách dùng\n\n- Điền matrix ở đầu mỗi initiative lớn.\n- Mỗi hàng phải có ít nhất một guardrail máy kiểm được.\n- Nếu chưa có checkpoint owner, không giao task cho agent.\n- Nếu pass/fail không rõ, chưa đủ điều kiện chạy song song multi-agent.\n\n"
+  },
+  {
+    "id": "docs-04-ui-ux-control-system",
+    "category": "Detailed Chapters",
+    "title": "Playbook: Kiểm soát Giao diện & Quy trình Đồng bộ Figma-to-Code",
+    "path": "docs/04-ui-ux-control-system.md",
+    "content": "# Playbook: Kiểm soát Giao diện & Quy trình Đồng bộ Figma-to-Code\n\nTài liệu này hướng dẫn cách chuyển đổi các nguyên tắc UI/UX từ thẩm mỹ chủ quan trên Figma thành các cổng kiểm soát kỹ thuật tất định, đảm bảo AI Agent tạo ra giao diện chính xác và đồng nhất 100% với thiết kế.\n\n---\n\n## 1. Bản chất: Vì sao AI Agent cần Cổng Kiểm soát UI?\nAI Agent không có mắt vật lý để cảm nhận tính thẩm mỹ hay tỷ lệ khoảng cách. Nếu chỉ ra lệnh bằng prompt mô tả chung chung, giao diện sinh ra sẽ bị phân mảnh, sai lệch spacing, và tự chế component. \n\nGiải pháp là **cưỡng chế tất định (Deterministic Enforcement)**: biến thiết kế Figma thành cấu trúc dữ liệu và thư viện component máy-đọc-được, sau đó dùng linter và kiểm thử visual để ép Agent tuân thủ.\n\n---\n\n## 2. Quy trình 6 bước từ Figma đến Mã nguồn (Figma-to-Code Pipeline)\n\n```mermaid\nflowchart TD\n    F[1. Figma variables & styles] -->|Figma API / Tokens Studio| JSON[2. Design Tokens JSON]\n    JSON -->|Style Dictionary| Style[CSS Variables / Tailwind Config]\n    Style -->|Ràng buộc cứng| Agent[3. AI Agent Coding]\n    Agent -->|Chạy Sandbox| Lint[4. Strict CSS/Tailwind Linter]\n    Lint -->|Fail| AgentFix[Agent tự sửa styles]\n    Lint -->|Pass| VisualQA[5. Playwright Visual Regression Loop]\n    VisualQA -->|Diff > 0.5%| Feedback[Ghép ảnh diff + CSS error log gửi Agent]\n    Feedback --> Agent\n    VisualQA -->|Pass| Portal[6. Designer HITL Portal]\n    Portal -->|Từ chối| Agent\n    Portal -->|Duyệt| Merge[Merge PR]\n```\n\n### Bước 1: Đồng bộ Design Tokens từ Figma\n- Mọi giá trị màu sắc, typography, spacing (margin/padding), border radius, shadow, và z-index được quản lý tập trung trên Figma Variables.\n- Sử dụng các plugin như **Token Studio for Figma** hoặc Figma API để tự động export các biến này thành tệp tin cấu hình thiết kế máy đọc được (`tokens.json`).\n\n### Bước 2: Biên dịch cấu trúc biến thiết kế (Compilation)\n- Tệp `tokens.json` được Style Dictionary biên dịch tự động thành cấu hình hệ thống:\n  - Biến CSS (`:root { --color-primary: #1565c0; }`).\n  - Tailwind Config (`theme: { extend: { spacing: { 'token-md': '16px' } } }`).\n\n### Bước 3: Lập trình dưới ràng buộc của Thư viện Component (Component Allowlist)\n- Cung cấp cho Agent tài liệu đặc tả thư viện component nội bộ có sẵn (Button, TextInput, Modal, Table...) kèm props và các biến thể (variants).\n- **Quy tắc bất biến:** Agent chỉ được lắp ghép UI từ thư viện đã duyệt. Không được viết inline style mới, không được dùng class CSS thuần tự do.\n\n### Bước 4: Lưới lọc mã nguồn tự động (Linting Gates)\n- Cấu hình linter nghiêm ngặt (ví dụ: `eslint-plugin-tailwindcss` hoặc stylelint) chặn hoàn toàn:\n  - Các mã màu hex cứng (ví dụ: chặn `text-[#ff5733]`, bắt buộc dùng `text-primary`).\n  - Các khoảng cách tùy ý (ví dụ: chặn `mt-[13px]`, bắt buộc dùng `mt-token-md`).\n- Nếu linter phát hiện vi phạm, CI/CD lập tức chặn biên dịch và trả lỗi về cho Agent tự chỉnh sửa.\n\n### Bước 5: Vòng lặp Visual QA tự động (Visual Regression Test Loop)\n- CI/CD tự động dựng ứng dụng trong môi trường sandbox và dùng **Playwright** hoặc **Puppeteer** để chụp screenshot giao diện thật.\n- Giao diện được chụp ở 3 viewports chuẩn: Mobile (375px), Tablet (768px), Desktop (1440px) và qua ma trận 5 trạng thái tương tác (`default`, `hover`, `active`, `focus`, `loading`, `error`, `empty`).\n- Tiến hành so sánh điểm ảnh (pixel-by-pixel comparison) với thiết kế mẫu xuất từ Figma.\n- **Vòng lặp sửa lỗi của Agent:** \n  - Nếu tỉ lệ lệch ảnh (visual diff) > **0.5%**, hệ thống tự động sinh ảnh ghép tô đỏ vùng lệch, trích xuất mã CSS lỗi và gửi phản hồi lại cho Agent.\n  - Agent đọc hình ảnh diff và log để sửa code, chạy lại visual test. Tối đa chạy 3 vòng lặp.\n\n### Bước 6: Cổng kiểm duyệt trực quan của Nhà thiết kế (Designer HITL Portal)\n- Sau khi giao diện vượt qua vòng lặp Visual QA tự động, PR được tạo ra kèm báo cáo ảnh diff.\n- PR được đẩy lên một cổng duyệt trực quan (Designer HITL Portal), cho phép designer duyệt hoặc từ chối và ghi lại phản hồi bằng hình ảnh/văn bản. Đóng góp ý kiến này sẽ được đưa vào bộ nhớ/task tiếp theo của Agent.\n\n---\n\n## 3. Các cơ chế kiểm soát tất định (Deterministic Controls)\n\n### Cấu hình Linter cưỡng chế (Example `.eslintrc.json`)\n```json\n{\n  \"plugins\": [\"tailwindcss\"],\n  \"rules\": {\n    \"tailwindcss/no-custom-classname\": \"error\",\n    \"tailwindcss/classnames-order\": \"warn\",\n    \"tailwindcss/no-arbitrary-value\": \"error\"\n  }\n}\n```\n*Rule `no-arbitrary-value: \"error\"` sẽ chặn đứng mọi class tự chế dạng `h-[123px]` hoặc `p-[9px]`, buộc Agent sử dụng biến thiết kế đã chốt.*\n\n### Ma trận trạng thái giao diện bắt buộc (State Matrix)\nMỗi màn hình được Agent dựng phải có tối thiểu các file test case tương ứng với các trạng thái sau để chụp ảnh đối chiếu:\n- `PageName.stories.tsx` (hoặc test script) định nghĩa:\n  - `DefaultState` (Dữ liệu chuẩn).\n  - `LoadingState` (Đang tải).\n  - `EmptyState` (Không có dữ liệu - kiểm tra empty icon & text).\n  - `ErrorState` (Lỗi API - kiểm tra nút retry, thông báo lỗi).\n  - `InteractedState` (Trạng thái hover/active của các nút bấm).\n\n---\n\n## 4. Tiêu chí Pass/Fail đối với Giao diện\n\n- **PASS:**\n  - 100% CSS/Tailwind classes lấy từ Design Tokens của Figma.\n  - Vượt qua linter kiểm tra cứng, không chứa giá trị hard-coded.\n  - Visual regression diff < 0.5% ở tất cả các kích thước màn hình và trạng thái.\n  - Được Designer duyệt và ký nhận (Sign-off) trên HITL Portal.\n\n- **FAIL:**\n  - Tự ý viết CSS inline hoặc class Tailwind tự chế (`mt-[17px]`, `#123456`).\n  - Lệch phông chữ, cỡ chữ, hoặc thiếu trạng thái Responsive.\n  - Thiếu màn hình Loading, Error, hoặc Empty.\n  - Visual regression diff >= 0.5% so với Figma mà chưa được Designer ký duyệt đặc cách.\n"
+  },
+  {
+    "id": "docs-05-architecture-governance",
+    "category": "Detailed Chapters",
+    "title": "Architecture Governance",
+    "path": "docs/05-architecture-governance.md",
+    "content": "# Architecture Governance\n\nKiến trúc là cổng chất lượng trước khi agent implement, không phải kết quả ngẫu nhiên trong lúc coding.\n\n## Architecture Freeze Before Agent Build\n\nTrước khi giao task cho agent, phải có:\n\n- feature spec đã duyệt;\n- ADR cho quyết định khó đảo;\n- module boundary và data ownership rõ;\n- threat model cho vùng rủi ro;\n- rollback path hoặc migration path;\n- test strategy.\n\n## Review đa vai\n\n| Vai | Câu hỏi chính |\n|---|---|\n| Architect | Boundary có rõ không, dependency có đúng chiều không? |\n| Security | Quyền, dữ liệu nhạy cảm, audit trail đã đủ chưa? |\n| Scalability | Bottleneck, state, queue, cache, throughput ra sao? |\n| Maintainability | Testability, versioning, migration, cognitive load thế nào? |\n| Cost | Hạ tầng, token/tool call, vận hành 24/7 có kiểm soát không? |\n| Domain expert | Logic nghiệp vụ và exception flow có đúng không? |\n\n## Không giao cho agent khi\n\n- API/schema/event chưa chốt.\n- Data owner còn mơ hồ.\n- Permission model chưa được duyệt.\n- ADR thiếu alternatives hoặc consequences.\n- Reviewer chưa đồng ý rollback path.\n\n"
+  },
+  {
+    "id": "docs-06-large-module-delivery",
+    "category": "Detailed Chapters",
+    "title": "Large Module Delivery",
+    "path": "docs/06-large-module-delivery.md",
+    "content": "# Large Module Delivery\n\nHệ thống lớn phải được chia theo domain capability và interface contract, không chia tùy tiện theo màn hình hoặc file.\n\n## Bounded context\n\nMỗi bounded context cần có:\n\n- năng lực nghiệp vụ sở hữu;\n- thuật ngữ chính;\n- data ownership;\n- inbound/outbound API;\n- event phát ra và event tiêu thụ;\n- error model;\n- test contract.\n\n## Contract trước implementation\n\nAgent chỉ được implement khi module contract đã rõ:\n\n- input/output;\n- versioning;\n- backward compatibility;\n- idempotency/retry;\n- quyền truy cập;\n- E2E flow liên quan.\n\n## AGENTS.md phân tầng\n\n- Root `AGENTS.md`: nguyên tắc toàn cục, test command, security, coding rules.\n- Module `AGENTS.md`: boundary, domain terms, allowed dependencies, forbidden dependencies.\n- Package `AGENTS.md`: local conventions, known pitfalls, test command.\n\n## Gate\n\n- Contract tests ở biên module.\n- Integration tests giữa module.\n- E2E tests theo kịch bản nghiệp vụ thật.\n- Regression mới cho mỗi bug production.\n\n"
+  },
+  {
+    "id": "docs-07-multi-agent-orchestration",
+    "category": "Detailed Chapters",
+    "title": "Playbook: Điều phối Multi-Agent Song song hướng Domain",
+    "path": "docs/07-multi-agent-orchestration.md",
+    "content": "# Playbook: Điều phối Multi-Agent Song song hướng Domain\n\nTài liệu này hướng dẫn chi tiết mô hình kiến trúc Domain-Driven Multi-Agent (DDMA) để chạy nhiều AI Agent lập trình song song nhằm tăng tốc độ bàn giao dự án lớn, phức tạp, mà vẫn bảo đảm tuyệt đối tính liên kết, đồng bộ và logic nghiệp vụ.\n\n---\n\n## 1. Kiến trúc Tổng thể Domain-Driven Multi-Agent (DDMA)\n\nTrong các hệ thống lớn có nhiều nghiệp vụ đan xen, nếu để nhiều agent cùng tự do sửa đổi mã nguồn sẽ dẫn đến xung đột code (merge conflict), phá vỡ kiến trúc, chồng lấn dữ liệu, và sai lệch logic. \n\nGiải pháp là **chia để trị dựa trên Domain-Driven Design (DDD)** kết hợp **Hợp đồng giao diện (API/Event Contracts)** và **Vòng tranh biện tự động (Agentic Debate Loop)** dưới sự giám sát của Supervisor Agent.\n\n```mermaid\nflowchart TB\n    SUP[Supervisor Agent] -->|Phân rã & gán Task theo Domain| Map[Task Ownership Map]\n    \n    Map -->|Cách ly Worktree A| AgentA[Coding Agent A - Domain Khách Hàng]\n    Map -->|Cách ly Worktree B| AgentB[Coding Agent B - Domain Hóa Đơn]\n    \n    AgentA <-->|Thống nhất Contract trước| SharedContract[(API Spec / Event Schema Registry)]\n    AgentB <-->|Thống nhất Contract trước| SharedContract\n    \n    subgraph ExecutionA[Nhánh A - Sandbox A]\n        AgentA --> CodeA[Code Domain A]\n        CodeA --> PactA[Contract Tests & Unit tests]\n    end\n    \n    subgraph ExecutionB[Nhánh B - Sandbox B]\n        AgentB --> CodeB[Code Domain B]\n        CodeB --> PactB[Contract Tests & Unit tests]\n    end\n    \n    PactA & PactB --> CI[CI Integration Gate]\n    CI -->|Xung đột API / Test Fail| Debate[Agentic Debate Protocol - Tranh biện tự động]\n    Debate -->|Tự điều chỉnh spec thành công| CI\n    Debate -->|Thất bại 3 vòng| Human[Tech Lead HITL Checkpoint]\n    CI -->|Pass E2E & Contracts| Merge[Master Merge Gate]\n```\n\n---\n\n## 2. Ba Trụ cột Kiểm soát Logic và Tính liên kết (Three Pillars of Cohesion)\n\n### Trụ cột 1: Cách ly Không gian làm việc (Workspace Isolation)\nĐể tránh các agent sửa đè code của nhau, chúng tôi áp dụng:\n- **Isolated Git Worktrees:** Mỗi agent hoạt động trên một branch và Git Worktree (thư mục vật lý) độc lập.\n- **Directory Access Lock (Cấm biên):** Định nghĩa ranh giới Bounded Context nghiêm ngặt. Hệ thống pre-commit hooks (ví dụ: Husky) chặn cứng không cho phép Agent sửa đổi các file nằm ngoài thư mục domain được phân quyền trong Task Brief.\n  - *Ví dụ:* Agent A phụ trách domain *Hóa Đơn* chỉ được phép tạo và sửa đổi các file trong `/src/modules/billing/`. Mọi thay đổi ngoài thư mục này sẽ bị git hook từ chối commit.\n- **Database Schema Lock (Khóa cơ sở dữ liệu):** Schema database là bất biến trong suốt quá trình agent lập trình song song. Mọi đề xuất thêm bảng hoặc thay đổi kiểu dữ liệu trường phải được viết thành tệp migration và được Architect (Con người) duyệt trước khi phân phối task cho các agent.\n\n### Trụ cột 2: Contract-First (Hợp đồng trước, Viết code sau)\n- Trước khi bắt tay vào coding, các agent đại diện cho các module giao tiếp phải chốt trước **hợp đồng giao diện (interface contracts)**.\n- Giao diện đồng bộ: OpenAPI Spec (REST), GraphQL Schema, hoặc Protobuf (gRPC).\n- Giao diện bất đồng bộ: Event Schema (Avro/JSON Schema trên Message Broker).\n- Các hợp đồng này được đẩy lên **Shared Contract Registry** chung của dự án làm nguồn sự thật.\n\n### Trụ cột 3: Kiểm thử hợp đồng (Contract Testing / Pact)\n- Để đảm bảo tính đồng bộ logic mà không cần khởi động toàn bộ hệ thống cồng kềnh, các nhánh chạy song song bắt buộc phải triển khai **Consumer-Driven Contract Testing (Pact)**.\n- Domain A (Consumer) định nghĩa kỳ vọng dữ liệu từ Domain B (Provider).\n- Bất kỳ thay đổi nào làm phá vỡ cấu trúc dữ liệu trả về sẽ khiến kiểm thử contract thất bại ngay trên nhánh của agent đó trước khi được phép đẩy PR.\n\n---\n\n## 3. Cơ chế tự động giải quyết xung đột (Agentic Debate Protocol)\n\nKhi các agent chạy song song vô tình thay đổi code làm vỡ contract chung hoặc fail các bài test tích hợp (Integration Tests), hệ thống sẽ khởi động quy trình tranh biện tự động để tự điều chỉnh mà không cần con người can thiệp ngay lập tức:\n\n1. **Khởi động Phòng tranh biện (Initiate Debate Room):**\n   - Supervisor Agent phát hiện kiểm thử contract/tích hợp thất bại.\n   - Supervisor khóa quá trình merge của các nhánh liên quan và kéo các coding agent vào một phòng tranh luận ảo (Debate Room).\n\n2. **Cung cấp ngữ cảnh lỗi (Context Injection):**\n   - Supervisor đưa ra sơ đồ lỗi test, chỉ ra chính xác API/Event spec nào bị vỡ, và log lỗi chi tiết của hệ thống CI/CD.\n\n3. **Căn chỉnh tự động (Auto-Reconciliation):**\n   - **Vòng 1:** Coding Agent A (phía Consumer) trình bày lý do vì sao cần cấu trúc dữ liệu mới để phục vụ tính năng mới. Coding Agent B (phía Provider) phân tích ảnh hưởng đến hệ thống của mình và đề xuất chỉnh sửa tương thích ngược (backward-compatible).\n   - **Vòng 2:** Agent A đồng ý hoặc phản biện, đưa ra phiên bản API Spec cập nhật chung.\n   - **Vòng 3:** Agent B thực thi điều chỉnh mã nguồn tương ứng để khớp với spec mới chốt.\n\n4. **Tích hợp lại (Re-Integration):**\n   - Hệ thống tự động chạy lại CI/CD và bộ test Contract. Nếu pass, Supervisor mở khóa merge PR.\n\n5. **Leo thang (Escalation Gate):**\n   - Nếu sau 3 vòng thảo luận mà các agent không thể thống nhất spec do xung đột logic nghiệp vụ sâu (ví dụ: đòi hỏi cấu trúc DB khác biệt hoàn toàn), Supervisor sẽ đóng băng Debate Room và gửi báo cáo phân tích xung đột (Conflict Analysis Report) lên Technical Lead (Con người) để ra quyết định cuối cùng.\n\n---\n\n## 4. Tiêu chí Pass/Fail đối với Multi-Agent\n\n- **PASS:**\n  - 100% tệp tin sửa đổi nằm đúng ranh giới domain phân quyền.\n  - API/Event contracts được thống nhất, lưu vào registry và vượt qua kiểm thử Contract (Pact).\n  - Tranh biện tự động giải quyết được toàn bộ xung đột API giữa các nhánh.\n  - 100% Unit, Integration, và E2E tests đạt màu xanh trên CI/CD.\n\n- **FAIL:**\n  - Agent sửa đổi code ngoài domain được gán (vượt biên giới).\n  - Thay đổi schema database không có migration được duyệt trước.\n  - Làm hỏng API/Event contract của module khác mà không sửa đổi hoặc tự giải quyết được.\n  - Tranh biện tự động thất bại và trôi nổi mà không escalate kịp thời cho Technical Lead.\n"
+  },
+  {
+    "id": "docs-08-observability-evals-governance",
+    "category": "Detailed Chapters",
+    "title": "Observability, Evals, Governance",
+    "path": "docs/08-observability-evals-governance.md",
+    "content": "# Observability, Evals, Governance\n\nAgentic SDLC cần quan sát được, đánh giá được và có kiểm soát quyền hạn.\n\n## Observability\n\nTheo dõi tối thiểu:\n\n- trace từng run;\n- tool calls;\n- số bước/loop;\n- token/cost;\n- latency;\n- failure mode;\n- human escalation.\n\n## Evals\n\nBa lớp đánh giá:\n\n- Unit evals: định dạng, tool call, schema, ground truth.\n- Regression suite: LLM-as-judge hoặc rubric review cho chất lượng chủ quan.\n- Production sampling: lấy mẫu trace thật để bắt drift.\n\n## Governance\n\n- Least privilege cho agent.\n- Scoped credentials.\n- Guardrails đầu vào và đầu ra.\n- HITL cho hành động không hoàn tác.\n- Audit trail cho hành động quan trọng.\n\n## Feedback loop\n\nMỗi lỗi production phải tạo một artifact mới: test, eval, guardrail, checklist item hoặc cập nhật `AGENTS.md`.\n\n"
+  },
+  {
+    "id": "docs-09-adoption-roadmap",
+    "category": "Detailed Chapters",
+    "title": "Adoption Roadmap",
+    "path": "docs/09-adoption-roadmap.md",
+    "content": "# Adoption Roadmap\n\nKhông nên triển khai toàn bộ Agentic SDLC cùng lúc. Bắt đầu từ observability, eval và template trước khi mở rộng multi-agent.\n\n## Giai đoạn 1 - Chuẩn hóa tài liệu\n\n- Dùng feature spec, ADR, module contract và merge gate report.\n- Tạo root `AGENTS.md` cho repo sản phẩm.\n- Bắt đầu checklist UI/UX, architecture và release.\n\n## Giai đoạn 2 - Quality gates\n\n- Thêm contract tests.\n- Thêm visual regression cho màn hình trọng yếu.\n- Thêm eval plan cho agent output.\n- Yêu cầu merge gate report cho PR do agent tạo.\n\n## Giai đoạn 3 - Multi-agent có kiểm soát\n\n- Chạy supervisor + 2-3 sub-agent trên worktree riêng.\n- Dùng ownership map.\n- Chỉ fan-out task khi spec/contract đã rõ.\n\n## Giai đoạn 4 - 24/7 và cải thiện liên tục\n\n- Trace mọi run.\n- Sampling production.\n- Tạo regression từ lỗi thật.\n- Cập nhật template và `AGENTS.md` theo bài học.\n\n"
+  },
+  {
+    "id": "checklists-architecture",
+    "category": "Verification Checklists",
+    "title": "Architecture Checklist",
+    "path": "checklists/architecture.md",
+    "content": "# Architecture Checklist\n\n- [ ] Feature spec đã duyệt.\n- [ ] ADR có context, decision, alternatives, consequences, rollback path.\n- [ ] Module boundary rõ.\n- [ ] Data ownership rõ.\n- [ ] API/schema/event contract rõ nếu liên quan.\n- [ ] Dependency direction được kiểm soát.\n- [ ] Threat model có mitigation cho rủi ro cao.\n- [ ] Test strategy gắn với quyết định kiến trúc.\n- [ ] Không giao agent implement khi còn quyết định kiến trúc mơ hồ.\n\n"
+  },
+  {
+    "id": "checklists-module-large-system",
+    "category": "Verification Checklists",
+    "title": "Large Module Checklist",
+    "path": "checklists/module-large-system.md",
+    "content": "# Large Module Checklist\n\n- [ ] Module được chia theo bounded context/domain capability.\n- [ ] In scope/out of scope rõ.\n- [ ] Public API/event/schema rõ.\n- [ ] Data owner và write/read access rõ.\n- [ ] Error model, retry và idempotency rõ.\n- [ ] Contract tests có cho biên module.\n- [ ] Integration/E2E flow đại diện nghiệp vụ thật.\n- [ ] `AGENTS.md` module có boundary, dependency rules và test command.\n- [ ] Bug production tạo regression test/eval mới.\n\n"
+  },
+  {
+    "id": "checklists-multi-agent",
+    "category": "Verification Checklists",
+    "title": "Multi-Agent Checklist",
+    "path": "checklists/multi-agent.md",
+    "content": "# Multi-Agent Checklist\n\n- [ ] Supervisor/human lead được chỉ định.\n- [ ] Spec, ADR và contract đã duyệt trước khi fan-out.\n- [ ] Mỗi agent có task brief riêng.\n- [ ] Mỗi agent có branch/worktree riêng.\n- [ ] Ownership map không có scope chồng lấn.\n- [ ] CI/eval chạy riêng từng nhánh.\n- [ ] Trace/cost/loop budget được theo dõi.\n- [ ] Merge gate yêu cầu tests, contract, eval và human review.\n- [ ] Lỗi tích hợp được cập nhật vào test, checklist hoặc `AGENTS.md`.\n\n"
+  },
+  {
+    "id": "checklists-observability",
+    "category": "Verification Checklists",
+    "title": "Observability Checklist",
+    "path": "checklists/observability.md",
+    "content": "# Observability Checklist\n\n- [ ] Mỗi agent run có trace.\n- [ ] Tool calls được ghi lại.\n- [ ] Token/cost được theo dõi.\n- [ ] Loop/step count có guard.\n- [ ] Quality, cost và reliability có dashboard.\n- [ ] Alert có owner và escalation path.\n- [ ] Production trace sampling được định nghĩa.\n- [ ] Failure analysis tạo test/eval/guardrail mới.\n\n"
+  },
+  {
+    "id": "checklists-release-readiness",
+    "category": "Verification Checklists",
+    "title": "Release Readiness Checklist",
+    "path": "checklists/release-readiness.md",
+    "content": "# Release Readiness Checklist\n\n- [ ] Acceptance criteria đạt.\n- [ ] Unit/integration/contract/E2E tests đạt theo phạm vi.\n- [ ] Eval plan đạt nếu có agent output hoặc workflow chủ quan.\n- [ ] UI/UX review đạt nếu có UI.\n- [ ] Security/threat model đạt nếu có quyền, dữ liệu nhạy cảm hoặc tool mới.\n- [ ] Merge gate report có đủ evidence.\n- [ ] Rollback hoặc canary plan rõ.\n- [ ] Monitoring/alert sẵn sàng.\n- [ ] Required reviewers đã approval.\n\n"
+  },
+  {
+    "id": "checklists-ui-ux",
+    "category": "Verification Checklists",
+    "title": "UI/UX Checklist",
+    "path": "checklists/ui-ux.md",
+    "content": "# UI/UX Checklist\n\n- [ ] UI dùng design tokens, không hard-code màu/spacing/typography.\n- [ ] Component nằm trong component library hoặc có component contract được duyệt.\n- [ ] Đủ default, loading, empty, error, disabled, focus states.\n- [ ] Responsive đạt ở mobile/tablet/desktop.\n- [ ] Text không tràn, không đè, không làm vỡ layout.\n- [ ] Accessibility đạt contrast, keyboard navigation, visible focus.\n- [ ] Screenshot diff được review nếu có thay đổi thị giác.\n- [ ] Designer/product duyệt pattern mới.\n\n"
+  },
+  {
+    "id": "templates-agents-agent-task-brief",
+    "category": "Operational Templates",
+    "title": "Agent Task Brief Template",
+    "path": "templates/agents/agent-task-brief.md",
+    "content": "# Agent Task Brief Template\n\n## Mục tiêu\n\nGiao task cho agent với scope, contract và gate rõ ràng.\n\n## Operating principle\n\nHuman owns intent, architecture, design standard, contracts; agents own execution inside constraints.\n\n## Owner\n\n- Human supervisor:\n- Agent/tool:\n- Reviewer:\n\n## Input bắt buộc\n\n- Feature spec:\n- ADR:\n- UI contract:\n- Module contract:\n- Ownership map:\n- Test/eval expectation:\n\n## Output bắt buộc\n\n- Files/modules allowed:\n- Files/modules forbidden:\n- Implementation steps:\n- Tests/evals to run:\n- Evidence to report:\n- Escalation conditions:\n\n## Checklist pass/fail\n\n- Pass khi agent có thể thực thi mà không tự quyết kiến trúc, UI standard hoặc contract.\n- Fail khi task quá rộng, scope chồng lấn, test không rõ hoặc owner không rõ.\n\n## Reviewer\n\n- Supervisor:\n- Code reviewer:\n- Domain/design/architecture reviewer nếu liên quan:\n\n"
+  },
+  {
+    "id": "templates-agents-merge-gate-report",
+    "category": "Operational Templates",
+    "title": "Merge Gate Report Template",
+    "path": "templates/agents/merge-gate-report.md",
+    "content": "# Merge Gate Report Template\n\n## Mục tiêu\n\nCung cấp bằng chứng trước khi merge thay đổi do agent hoặc multi-agent tạo ra.\n\n## Operating principle\n\nHuman owns intent, architecture, design standard, contracts; agents own execution inside constraints.\n\n## Owner\n\n- Implementation owner:\n- Supervisor:\n- Reviewer:\n\n## Input bắt buộc\n\n- Feature spec link:\n- ADR link:\n- UI contract link nếu có:\n- Module contract link nếu có:\n- Agent task brief:\n- Ownership map nếu multi-agent:\n\n## Output bắt buộc\n\n### Change summary\n\n- What changed:\n- Why:\n- Scope:\n\n### Evidence\n\n- Tests/evals đã chạy:\n- Contract không vỡ:\n- Integration/E2E result:\n- Screenshot diff nếu có UI:\n- Accessibility/responsive result nếu có UI:\n- Security/threat-model check nếu có:\n- Trace/cost/loop evidence nếu có:\n\n### Reviewer approval\n\n| Reviewer | Area | Decision | Notes |\n|---|---|---|---|\n|  | Product/domain |  |  |\n|  | Architecture |  |  |\n|  | Design/UI |  |  |\n|  | Engineering |  |  |\n\n## Checklist pass/fail\n\n- Pass khi bằng chứng đầy đủ và reviewer liên quan đã duyệt.\n- Fail khi thiếu test/eval, contract bị vỡ, screenshot diff chưa duyệt, ADR/spec thiếu link hoặc reviewer chưa approval.\n\n## Reviewer\n\n- Final approver:\n- Required reviewers:\n\n"
+  },
+  {
+    "id": "templates-agents-module-agents",
+    "category": "Operational Templates",
+    "title": "Module AGENTS.md Template",
+    "path": "templates/agents/module-AGENTS.md",
+    "content": "# Module AGENTS.md Template\n\n## Mục tiêu\n\nĐịnh nghĩa ngữ cảnh local cho agent khi làm việc trong một module cụ thể.\n\n## Owner\n\n- Module owner:\n- Domain owner:\n- Engineering owner:\n\n## Input bắt buộc\n\n- Domain boundary:\n- Module contract:\n- Data ownership:\n- Dependency rules:\n- Test commands:\n\n## Output bắt buộc\n\n- Module context:\n- Domain boundary:\n- Contracts:\n- Allowed/forbidden dependencies:\n- Commands:\n- Known pitfalls:\n- Agent rules:\n\n## Module Context\n\n- Module name:\n- Domain capability:\n- Module owner:\n- Domain owner:\n\n## Domain Boundary\n\n- In scope:\n- Out of scope:\n- Key business terms:\n- Business invariants:\n\n## Contracts\n\n- Public APIs:\n- Events emitted:\n- Events consumed:\n- Data owned:\n- Data read-only:\n- Error model:\n\n## Dependencies\n\n- Allowed dependencies:\n- Forbidden dependencies:\n- Dependency direction rules:\n\n## Commands\n\n- Local test command:\n- Contract test command:\n- E2E/eval command:\n- Lint/typecheck command:\n\n## Known Pitfalls\n\n- Pitfall 1:\n- Pitfall 2:\n- Pitfall 3:\n\n## Agent Rules\n\n- Human owns intent, architecture, design standard, contracts; agents own execution inside constraints.\n- Do not change module boundary without ADR/reviewer approval.\n- Do not write data owned by another module.\n- Do not introduce new dependency direction without architecture approval.\n- Escalate if business terminology or error behavior is unclear.\n\n## Checklist pass/fail\n\n- Pass khi agent hiểu rõ module này sở hữu gì, không sở hữu gì, được phụ thuộc vào đâu và phải chạy test nào.\n- Fail khi boundary, dependency, data ownership hoặc command còn mơ hồ.\n\n## Reviewer\n\n- Module owner:\n- Domain owner:\n- Architecture/engineering:\n"
+  },
+  {
+    "id": "templates-agents-multi-agent-ownership-map",
+    "category": "Operational Templates",
+    "title": "Multi-Agent Ownership Map Template",
+    "path": "templates/agents/multi-agent-ownership-map.md",
+    "content": "# Multi-Agent Ownership Map Template\n\n## Mục tiêu\n\nTránh xung đột khi nhiều agent làm song song.\n\n## Operating principle\n\nHuman owns intent, architecture, design standard, contracts; agents own execution inside constraints.\n\n## Owner\n\n- Supervisor:\n- Engineering lead:\n\n## Input bắt buộc\n\n- Approved spec:\n- ADR/contracts:\n- Task list:\n- Repo/module map:\n\n## Output bắt buộc\n\n| Agent | Branch/worktree | Scope được phép | Scope cấm sửa | Contract liên quan | Required gates | Reviewer |\n|---|---|---|---|---|---|---|\n| Agent A |  |  |  |  |  |  |\n| Agent B |  |  |  |  |  |  |\n\n## Checklist pass/fail\n\n- Pass khi không có scope chồng lấn và mỗi agent có branch/worktree riêng.\n- Fail khi nhiều agent cùng sửa boundary chưa chốt hoặc không có merge order.\n\n## Reviewer\n\n- Supervisor:\n- Architect nếu chạm boundary:\n- Domain/design nếu liên quan:\n\n"
+  },
+  {
+    "id": "templates-agents-root-agents",
+    "category": "Operational Templates",
+    "title": "Root AGENTS.md Template",
+    "path": "templates/agents/root-AGENTS.md",
+    "content": "# Root AGENTS.md Template\n\n## Mục tiêu\n\nĐịnh nghĩa nguyên tắc toàn cục để mọi agent làm việc trong repo không tự quyết kiến trúc, UI standard, contract hoặc scope.\n\n## Operating Principle\n\nHuman owns intent, architecture, design standard, contracts; agents own execution inside constraints.\n\n## Owner\n\n- Engineering lead:\n- Agent supervisor:\n- Architecture owner:\n\n## Input bắt buộc\n\n- Repo architecture overview:\n- Design system contract nếu có UI:\n- Test/eval commands:\n- Security/permission rules:\n- Module ownership map:\n\n## Output bắt buộc\n\n- Global agent rules:\n- Required artifacts before implementation:\n- Quality gates:\n- Forbidden actions:\n- Escalation rules:\n\n## Global Rules\n\n- Do not decide architecture, storage, permission model, API boundary or event schema without approved spec/ADR.\n- Do not create UI outside the design system without approved design/component contract.\n- Do not modify files outside the assigned scope.\n- Do not overlap with another agent's ownership area.\n- Run the tests/evals/checks specified in the task brief.\n- Stop and escalate if requirements, contracts, permissions or data ownership are ambiguous.\n\n## Required Inputs Before Implementation\n\n- Feature spec.\n- ADR for architectural changes.\n- UI contract for UI changes.\n- Module contract for module boundary/API/data changes.\n- Agent task brief.\n- Expected tests/evals.\n\n## Quality Gates\n\n- Unit/integration/contract/E2E tests as applicable.\n- Visual regression and accessibility checks for UI.\n- Security checks for permission/data/tool changes.\n- Merge gate report before merge.\n\n## Forbidden Actions\n\n- Broad refactor outside scope.\n- Silent schema change.\n- Hard-coded UI style outside tokens.\n- Production-impacting action without human approval.\n- Merge when gate fails.\n\n## Checklist pass/fail\n\n- Pass khi agent có đủ rule toàn cục để dừng, hỏi hoặc thực thi trong constraint.\n- Fail khi agent vẫn phải tự đoán kiến trúc, UI standard, quyền, test command hoặc scope.\n\n## Reviewer\n\n- Engineering:\n- Architecture:\n- Security/design nếu liên quan:\n"
+  },
+  {
+    "id": "templates-architecture-adr",
+    "category": "Operational Templates",
+    "title": "ADR Template",
+    "path": "templates/architecture/adr.md",
+    "content": "# ADR Template\n\n## Mục tiêu\n\nGhi lại quyết định kiến trúc quan trọng trước khi agent implement.\n\n## Owner\n\n- Architect:\n- Engineering owner:\n- Domain owner:\n\n## Input bắt buộc\n\n- Feature spec:\n- Context hệ thống:\n- Ràng buộc phi chức năng:\n- Module/data/API liên quan:\n- Rủi ro đã biết:\n\n## Output bắt buộc\n\n### Context\n\nVấn đề, giả định, ràng buộc và lý do cần quyết định.\n\n### Decision\n\nQuyết định được chọn và phạm vi áp dụng.\n\n### Alternatives\n\nCác phương án bị loại và lý do loại.\n\n### Consequences\n\nTác động tới scale, cost, security, testability, operability và maintainability.\n\n### Rollback path\n\nCách đảo quyết định, giảm thiểu thiệt hại hoặc migration path nếu giả định sai.\n\n## Checklist pass/fail\n\n- Pass khi decision, alternatives, consequences và rollback path rõ.\n- Fail khi agent vẫn phải tự chọn storage, API boundary, event schema, permission model hoặc dependency direction.\n\n## Reviewer\n\n- Architect:\n- Security:\n- Domain:\n- Engineering:\n\n"
+  },
+  {
+    "id": "templates-architecture-architecture-freeze-checklist",
+    "category": "Operational Templates",
+    "title": "Architecture Freeze Checklist",
+    "path": "templates/architecture/architecture-freeze-checklist.md",
+    "content": "# Architecture Freeze Checklist\n\n## Mục tiêu\n\nKhóa đủ quyết định kiến trúc trước khi agent build.\n\n## Owner\n\n- Architect:\n- Engineering lead:\n\n## Input bắt buộc\n\n- Feature spec:\n- ADR:\n- Architecture review:\n- Threat model:\n- Module contract:\n\n## Output bắt buộc\n\n- Freeze decision: approved / rejected / needs revision\n- Approved implementation boundaries:\n- Required tests/evals:\n- Rollback/migration path:\n\n## Checklist pass/fail\n\n- [ ] Spec đã duyệt.\n- [ ] ADR đầy đủ context, decision, alternatives, consequences, rollback path.\n- [ ] Module boundary và data ownership rõ.\n- [ ] API/schema/event contract rõ nếu có.\n- [ ] Threat model có mitigation.\n- [ ] Test strategy đã định nghĩa.\n- [ ] Agent task scope có thể viết mà không cần agent tự quyết kiến trúc.\n\n## Reviewer\n\n- Architect:\n- Security:\n- Domain:\n- Engineering:\n\n"
+  },
+  {
+    "id": "templates-architecture-architecture-review",
+    "category": "Operational Templates",
+    "title": "Architecture Review Template",
+    "path": "templates/architecture/architecture-review.md",
+    "content": "# Architecture Review Template\n\n## Mục tiêu\n\nPhản biện kiến trúc đa góc độ trước khi freeze và giao task cho agent.\n\n## Owner\n\n- Architect:\n- Review facilitator:\n\n## Input bắt buộc\n\n- Feature spec:\n- ADR:\n- Domain/module map:\n- Threat model nếu có:\n- Module contract nếu có:\n\n## Output bắt buộc\n\n| Vai review | Nhận xét | Rủi ro | Quyết định |\n|---|---|---|---|\n| Architect |  |  |  |\n| Security |  |  |  |\n| Scalability |  |  |  |\n| Maintainability |  |  |  |\n| Cost |  |  |  |\n| Domain expert |  |  |  |\n\n## Checklist pass/fail\n\n- Pass khi mọi rủi ro P0/P1 có mitigation hoặc owner.\n- Fail khi boundary, data ownership, dependency direction hoặc rollback path chưa rõ.\n\n## Reviewer\n\n- Final approver:\n- Reviewers:\n\n"
+  },
+  {
+    "id": "templates-architecture-threat-model",
+    "category": "Operational Templates",
+    "title": "Threat Model Template",
+    "path": "templates/architecture/threat-model.md",
+    "content": "# Threat Model Template\n\n## Mục tiêu\n\nXác định rủi ro bảo mật, quyền hạn và dữ liệu trước khi agent thực thi.\n\n## Owner\n\n- Security owner:\n- Engineering owner:\n\n## Input bắt buộc\n\n- Feature spec:\n- Architecture/ADR:\n- Data classification:\n- Tool/API permissions:\n- External integrations:\n\n## Output bắt buộc\n\n| Threat | Impact | Likelihood | Mitigation | Owner |\n|---|---|---|---|---|\n| Prompt injection |  |  |  |  |\n| Tool misuse |  |  |  |  |\n| Excessive privilege |  |  |  |  |\n| Data exposure |  |  |  |  |\n| Unsafe output handling |  |  |  |  |\n\n## Checklist pass/fail\n\n- Pass khi mỗi rủi ro cao có guardrail/eval/alert hoặc HITL.\n- Fail khi agent được cấp quyền rộng, credentials không scoped hoặc hành động không hoàn tác thiếu approval.\n\n## Reviewer\n\n- Security:\n- Engineering:\n- Compliance/domain:\n\n"
+  },
+  {
+    "id": "templates-modules-data-ownership",
+    "category": "Operational Templates",
+    "title": "Data Ownership Template",
+    "path": "templates/modules/data-ownership.md",
+    "content": "# Data Ownership Template\n\n## Mục tiêu\n\nXác định ai sở hữu dữ liệu, ai được ghi, ai chỉ được đọc.\n\n## Owner\n\n- Data owner:\n- Module owner:\n- Security owner:\n\n## Input bắt buộc\n\n- Domain boundary:\n- Module contract:\n- Data classification:\n- Compliance requirement:\n\n## Output bắt buộc\n\n| Entity/Table/Collection | Owner module | Write access | Read access | Sensitive data | Audit required |\n|---|---|---|---|---|---|\n|  |  |  |  |  |  |\n\n## Checklist pass/fail\n\n- Pass khi mỗi dữ liệu có một owner ghi rõ và quyền truy cập rõ.\n- Fail khi nhiều module cùng ghi một dữ liệu mà không có protocol hoặc audit.\n\n## Reviewer\n\n- Data:\n- Security:\n- Domain:\n- Engineering:\n\n"
+  },
+  {
+    "id": "templates-modules-domain-boundary",
+    "category": "Operational Templates",
+    "title": "Domain Boundary Template",
+    "path": "templates/modules/domain-boundary.md",
+    "content": "# Domain Boundary Template\n\n## Mục tiêu\n\nXác định bounded context/domain capability trước khi chia module hoặc giao task cho agent.\n\n## Owner\n\n- Domain owner:\n- Architect:\n- Engineering owner:\n\n## Input bắt buộc\n\n- Product requirement:\n- Current system map:\n- Business terminology:\n- Data/entities liên quan:\n\n## Output bắt buộc\n\n- Domain name:\n- Business capability:\n- In scope:\n- Out of scope:\n- Key terms:\n- Upstream dependencies:\n- Downstream consumers:\n- Data ownership:\n\n## Checklist pass/fail\n\n- Pass khi boundary đủ rõ để viết module contract.\n- Fail khi cùng một entity có nhiều owner, thuật ngữ mơ hồ hoặc workflow xuyên module chưa được mô tả.\n\n## Reviewer\n\n- Domain:\n- Architect:\n- Engineering:\n\n"
+  },
+  {
+    "id": "templates-modules-e2e-business-flow",
+    "category": "Operational Templates",
+    "title": "E2E Business Flow Template",
+    "path": "templates/modules/e2e-business-flow.md",
+    "content": "# E2E Business Flow Template\n\n## Mục tiêu\n\nĐịnh nghĩa kịch bản nghiệp vụ xuyên module để kiểm tra logic tổng thể.\n\n## Owner\n\n- Domain owner:\n- QA owner:\n- Engineering owner:\n\n## Input bắt buộc\n\n- Feature spec:\n- Module contracts:\n- Acceptance criteria:\n- Production incidents nếu có:\n\n## Output bắt buộc\n\n- Flow name:\n- User/system actor:\n- Preconditions:\n- Steps:\n- Expected result:\n- Modules involved:\n- Data changes:\n- Error/exception paths:\n- Test/eval owner:\n\n## Checklist pass/fail\n\n- Pass khi flow bắt được rủi ro tích hợp mà unit test không thấy.\n- Fail khi chỉ test từng function/module, không kiểm workflow nghiệp vụ thật.\n\n## Reviewer\n\n- Domain:\n- QA:\n- Engineering:\n\n"
+  },
+  {
+    "id": "templates-modules-module-contract",
+    "category": "Operational Templates",
+    "title": "Module Contract Template",
+    "path": "templates/modules/module-contract.md",
+    "content": "# Module Contract Template\n\n## Mục tiêu\n\nKhóa hợp đồng module để agent implement mà không làm đứt logic hệ thống lớn.\n\n## Owner\n\n- Module owner:\n- Domain owner:\n- Architect:\n\n## Input bắt buộc\n\n- Domain boundary:\n- ADR nếu có:\n- Data ownership:\n- API/schema/event requirement:\n- E2E business flow:\n\n## Output bắt buộc\n\n- Module responsibility:\n- Public API:\n- Events emitted:\n- Events consumed:\n- Data owned:\n- Data read-only:\n- Error model:\n- Retry/idempotency rules:\n- Security boundary:\n- Contract tests:\n- Integration/E2E tests:\n\n## Checklist pass/fail\n\n- Pass khi consumer có thể tích hợp qua contract mà không biết implementation nội bộ.\n- Fail khi agent phải tự định nghĩa API, data owner, error flow hoặc permission.\n\n## Reviewer\n\n- Module owner:\n- Consumer owner:\n- Domain:\n- Architect:\n\n"
+  },
+  {
+    "id": "templates-quality-eval-plan",
+    "category": "Operational Templates",
+    "title": "Eval Plan Template",
+    "path": "templates/quality/eval-plan.md",
+    "content": "# Eval Plan Template\n\n## Mục tiêu\n\nĐịnh nghĩa cách đánh giá agent output và regression.\n\n## Owner\n\n- Quality owner:\n- Engineering owner:\n- Domain reviewer:\n\n## Input bắt buộc\n\n- Feature spec:\n- Expected outputs:\n- Risk level:\n- Ground truth nếu có:\n- Production traces nếu có:\n\n## Output bắt buộc\n\n- Unit evals:\n- Regression scenarios:\n- LLM-as-judge rubric nếu cần:\n- Human calibration plan:\n- Production sampling plan:\n- Failure-to-test feedback rule:\n\n## Checklist pass/fail\n\n- Pass khi eval đo đúng task success, faithfulness, process compliance, safety, cost và UX nếu liên quan.\n- Fail khi chỉ dựa vào cảm giác hoặc chỉ chạy unit test cho output chủ quan.\n\n## Reviewer\n\n- Quality:\n- Domain:\n- Engineering:\n\n"
+  },
+  {
+    "id": "templates-quality-production-readiness-checklist",
+    "category": "Operational Templates",
+    "title": "Production Readiness Checklist Template",
+    "path": "templates/quality/production-readiness-checklist.md",
+    "content": "# Production Readiness Checklist Template\n\n## Mục tiêu\n\nĐảm bảo hệ thống sẵn sàng vận hành sau merge/release.\n\n## Owner\n\n- Engineering lead:\n- Ops/SRE owner:\n- Product owner:\n\n## Input bắt buộc\n\n- Release gate:\n- Monitoring plan:\n- Eval plan:\n- Rollback plan:\n\n## Output bắt buộc\n\n- Readiness decision:\n- Outstanding risks:\n- Monitoring dashboard/trace links:\n- Post-release review date:\n\n## Checklist pass/fail\n\n- [ ] Trace ghi đủ agent/tool/action.\n- [ ] Dashboard có quality, cost, reliability.\n- [ ] Alert có owner và escalation path.\n- [ ] Sampling production được bật nếu cần.\n- [ ] Rollback/circuit breaker có.\n- [ ] Failure feedback loop được định nghĩa.\n\n## Reviewer\n\n- Engineering:\n- Ops/SRE:\n- Product/domain:\n\n"
+  },
+  {
+    "id": "templates-quality-quality-control-matrix",
+    "category": "Operational Templates",
+    "title": "Quality Control Matrix Template",
+    "path": "templates/quality/quality-control-matrix.md",
+    "content": "# Quality Control Matrix Template\n\n## Mục tiêu\n\nÁnh xạ rủi ro sang nguồn sự thật, guardrail, checkpoint và pass/fail.\n\n## Owner\n\n- Engineering lead:\n- Quality owner:\n- Supervisor:\n\n## Input bắt buộc\n\n- Feature spec:\n- Architecture/ADR:\n- UI/module contracts:\n- Agent plan:\n\n## Output bắt buộc\n\n| Khu vực | Nguồn sự thật | Guardrail tự động | Checkpoint con người | Pass/fail |\n|---|---|---|---|---|\n| UI/UX | Design tokens, component library | Token linter, screenshot diff, a11y | Designer/product |  |\n| Architecture | Spec, ADR, threat model | Architecture tests, security scans | Architect/security/domain |  |\n| Module lớn | Domain map, contracts, AGENTS.md | Contract, integration, E2E | Domain/module owner |  |\n| Multi-agent | Ownership map, branch policy | CI per branch, trace/cost guard | Supervisor |  |\n| Observability | Trace schema, eval taxonomy | Sampling, alert, regression | Ops/engineering |  |\n\n## Checklist pass/fail\n\n- Pass khi mỗi rủi ro có guardrail và checkpoint.\n- Fail khi có rủi ro chỉ được mô tả bằng lời nhưng không có kiểm soát.\n\n## Reviewer\n\n- Engineering:\n- Product/domain:\n- Security/design nếu liên quan:\n\n"
+  },
+  {
+    "id": "templates-quality-release-gate",
+    "category": "Operational Templates",
+    "title": "Release Gate Template",
+    "path": "templates/quality/release-gate.md",
+    "content": "# Release Gate Template\n\n## Mục tiêu\n\nChặn release nếu chất lượng, bảo mật, hợp đồng hoặc vận hành chưa đạt.\n\n## Owner\n\n- Release owner:\n- Engineering lead:\n- QA/quality owner:\n\n## Input bắt buộc\n\n- Merge gate report:\n- Eval results:\n- Test results:\n- Risk review:\n- Rollback plan:\n\n## Output bắt buộc\n\n- Release decision: approve / reject / canary only\n- Known risks:\n- Rollback plan:\n- Monitoring plan:\n- Owner on call:\n\n## Checklist pass/fail\n\n- [ ] Feature acceptance criteria đạt.\n- [ ] Contract/integration/E2E tests đạt.\n- [ ] UI/UX review đạt nếu có UI.\n- [ ] Security/threat model đạt nếu có quyền/dữ liệu nhạy cảm.\n- [ ] Observability và alert đủ cho production.\n- [ ] Rollback/canary plan rõ.\n\n## Reviewer\n\n- Release:\n- Engineering:\n- Product/domain:\n- Security/ops nếu liên quan:\n\n"
+  },
+  {
+    "id": "templates-specs-definition-of-done",
+    "category": "Operational Templates",
+    "title": "Definition of Done Template",
+    "path": "templates/specs/definition-of-done.md",
+    "content": "# Definition of Done Template\n\n## Mục tiêu\n\nĐịnh nghĩa điều kiện hoàn thành cho feature/module trước khi merge.\n\n## Owner\n\n- Engineering owner:\n- Product owner:\n- QA/reviewer:\n\n## Input bắt buộc\n\n- Feature spec:\n- ADR nếu có:\n- UI contract nếu có:\n- Module contract nếu có:\n- Eval plan nếu có:\n\n## Output bắt buộc\n\n- Functional completion:\n- Test evidence:\n- Review evidence:\n- Documentation update:\n- Production readiness:\n\n## Checklist pass/fail\n\n- [ ] Acceptance criteria đạt.\n- [ ] Unit/integration/contract/E2E tests phù hợp đã chạy.\n- [ ] UI review và screenshot diff có nếu thay đổi UI.\n- [ ] ADR/spec/module contract được cập nhật nếu behavior đổi.\n- [ ] Merge gate report hoàn tất.\n\n## Reviewer\n\n- Engineering:\n- Product:\n- QA/domain:\n\n"
+  },
+  {
+    "id": "templates-specs-feature-spec",
+    "category": "Operational Templates",
+    "title": "Feature Spec Template",
+    "path": "templates/specs/feature-spec.md",
+    "content": "# Feature Spec Template\n\n## Mục tiêu\n\nMô tả kết quả nghiệp vụ cần đạt, không mô tả cách agent/code sẽ làm.\n\n## Owner\n\n- Product owner:\n- Domain owner:\n- Engineering owner:\n\n## Input bắt buộc\n\n- Vấn đề/ngữ cảnh:\n- Người dùng hoặc hệ thống chịu tác động:\n- Business outcome:\n- Ràng buộc thời gian/chi phí/pháp lý:\n- Link tài liệu liên quan:\n\n## Output bắt buộc\n\n- User journey hoặc workflow:\n- Acceptance criteria:\n- Out of scope:\n- Risk level: thấp / trung bình / cao / không hoàn tác\n- Artifact cần tạo: ADR / UI contract / module contract / eval plan / merge gate\n\n## Acceptance criteria\n\n- [ ] Tiêu chí 1:\n- [ ] Tiêu chí 2:\n- [ ] Tiêu chí 3:\n\n## Checklist pass/fail\n\n- Pass khi outcome, scope, acceptance criteria và owner rõ.\n- Fail khi agent phải tự đoán nghiệp vụ, tự quyết kiến trúc hoặc tự định nghĩa success criteria.\n\n## Reviewer\n\n- Product:\n- Domain:\n- Engineering:\n\n"
+  },
+  {
+    "id": "templates-specs-product-requirement",
+    "category": "Operational Templates",
+    "title": "Product Requirement Template",
+    "path": "templates/specs/product-requirement.md",
+    "content": "# Product Requirement Template\n\n## Mục tiêu\n\nKhóa ý định sản phẩm trước khi viết spec kỹ thuật hoặc giao việc cho agent.\n\n## Owner\n\n- Product owner:\n- Business stakeholder:\n- Domain owner:\n\n## Input bắt buộc\n\n- Cơ hội/vấn đề:\n- Người dùng mục tiêu:\n- Hành vi hiện tại:\n- Hành vi mong muốn:\n- Chỉ số thành công:\n\n## Output bắt buộc\n\n- Problem statement:\n- Target users:\n- Business rules:\n- Non-functional requirements:\n- Constraints:\n- Release expectation:\n\n## Checklist pass/fail\n\n- Pass khi yêu cầu đủ rõ để viết feature spec và test acceptance.\n- Fail khi chỉ có ý tưởng chung, thiếu người dùng, thiếu tiêu chí thành công hoặc thiếu ràng buộc.\n\n## Reviewer\n\n- Product:\n- Domain:\n- Design:\n- Engineering:\n\n"
+  },
+  {
+    "id": "templates-ui-ux-component-contract",
+    "category": "Operational Templates",
+    "title": "Component Contract Template",
+    "path": "templates/ui-ux/component-contract.md",
+    "content": "# Component Contract Template\n\n## Mục tiêu\n\nĐịnh nghĩa component đủ rõ để agent dùng hoặc mở rộng mà không phá design system.\n\n## Owner\n\n- Designer:\n- Frontend owner:\n\n## Input bắt buộc\n\n- Design system contract:\n- Component use case:\n- Related screens:\n- Accessibility requirement:\n\n## Output bắt buộc\n\n- Component name:\n- Purpose:\n- Props/variants:\n- States: default, hover, focus, active, disabled, loading, error, empty.\n- Token usage:\n- Responsive behavior:\n- Accessibility behavior:\n- Examples of correct usage:\n- Examples of forbidden usage:\n\n## Checklist pass/fail\n\n- Pass khi component dùng đúng token, đủ states, không tràn text, không phá responsive.\n- Fail khi agent phải tự suy luận state, spacing, interaction hoặc accessibility.\n\n## Reviewer\n\n- Design:\n- Frontend:\n- Product/domain nếu component biểu diễn nghiệp vụ:\n\n"
+  },
+  {
+    "id": "templates-ui-ux-design-system-contract",
+    "category": "Operational Templates",
+    "title": "Design System Contract Template",
+    "path": "templates/ui-ux/design-system-contract.md",
+    "content": "# Design System Contract Template\n\n## Mục tiêu\n\nBiến chuẩn UI/UX thành nguồn sự thật để agent dùng nhất quán.\n\n## Owner\n\n- Designer lead:\n- Frontend owner:\n\n## Input bắt buộc\n\n- Figma/design source:\n- Brand guideline:\n- Component library:\n- Accessibility target:\n\n## Output bắt buộc\n\n- Token list: color, spacing, typography, radius, shadow, motion.\n- Component usage rules:\n- Allowed patterns:\n- Forbidden patterns:\n- Responsive breakpoints:\n- Accessibility requirements:\n\n## Checklist pass/fail\n\n- Pass khi agent có thể implement UI mà không tự chọn màu, spacing, typography hoặc pattern mới.\n- Fail khi token thiếu, component state thiếu hoặc guideline chỉ mô tả bằng cảm giác.\n\n## Reviewer\n\n- Design:\n- Frontend:\n- Product:\n\n"
+  },
+  {
+    "id": "templates-ui-ux-ui-review-checklist",
+    "category": "Operational Templates",
+    "title": "UI Review Checklist Template",
+    "path": "templates/ui-ux/ui-review-checklist.md",
+    "content": "# UI Review Checklist Template\n\n## Mục tiêu\n\nReview thủ công các thay đổi UI/UX có tác động thị giác hoặc workflow.\n\n## Owner\n\n- Designer reviewer:\n- Product owner:\n\n## Input bắt buộc\n\n- Feature spec:\n- Design/component contract:\n- Screenshots:\n- Visual regression result:\n\n## Output bắt buộc\n\n- Review decision:\n- Required fixes:\n- Approved exceptions:\n\n## Checklist pass/fail\n\n- [ ] Dùng đúng design tokens.\n- [ ] Dùng đúng component.\n- [ ] Đủ default/loading/empty/error/disabled/focus states.\n- [ ] Responsive đúng breakpoint.\n- [ ] Accessibility đạt yêu cầu.\n- [ ] UI phản ánh đúng logic nghiệp vụ.\n\n## Reviewer\n\n- Design:\n- Product:\n- Frontend:\n\n"
+  },
+  {
+    "id": "templates-ui-ux-visual-regression-checklist",
+    "category": "Operational Templates",
+    "title": "Visual Regression Checklist",
+    "path": "templates/ui-ux/visual-regression-checklist.md",
+    "content": "# Visual Regression Checklist\n\n## Mục tiêu\n\nKiểm UI bằng ảnh chụp và baseline thay vì cảm tính.\n\n## Owner\n\n- Frontend owner:\n- Designer reviewer:\n\n## Input bắt buộc\n\n- Screens/routes affected:\n- Viewports:\n- Baseline screenshots:\n- Expected intentional differences:\n\n## Output bắt buộc\n\n- Screenshot diff result:\n- Approved differences:\n- Rejected differences:\n- Follow-up fixes:\n\n## Checklist pass/fail\n\n- [ ] Desktop viewport đạt.\n- [ ] Tablet viewport đạt.\n- [ ] Mobile viewport đạt.\n- [ ] Loading/empty/error states đạt nếu liên quan.\n- [ ] Text không tràn/đè.\n- [ ] Focus/hover/disabled states không vỡ layout.\n\n## Reviewer\n\n- Design:\n- Frontend:\n\n"
+  },
+  {
+    "id": "examples-sample-agents",
+    "category": "Practical Examples",
+    "title": "Sample AGENTS.md",
+    "path": "examples/sample-AGENTS.md",
+    "content": "# Sample AGENTS.md\n\n## Operating Principle\n\nHuman owns intent, architecture, design standard, contracts; agents own execution inside constraints.\n\n## Global Rules\n\n- Do not decide architecture without approved ADR.\n- Do not create UI outside the design system.\n- Do not change API/schema/event contracts without reviewer approval.\n- Do not modify files outside assigned scope.\n- Do not overlap with another agent's ownership area.\n- Stop and ask supervisor when scope, contract, data owner or test expectation is unclear.\n\n## Required Artifacts\n\n- Feature spec before implementation.\n- ADR for architecture changes.\n- Component contract for UI changes.\n- Module contract for API/data/event changes.\n- Merge gate report before merge.\n\n## Quality Gates\n\n- Unit tests for local logic.\n- Contract tests for module boundaries.\n- Visual regression and accessibility checks for UI.\n- Security review for permission/data/tool changes.\n- Human review for high-risk or irreversible changes.\n\n"
+  },
+  {
+    "id": "examples-sample-enterprise-feature-adr",
+    "category": "Practical Examples",
+    "title": "ADR - Approval Dashboard Boundary",
+    "path": "examples/sample-enterprise-feature/adr.md",
+    "content": "# ADR - Approval Dashboard Boundary\n\n## Mục tiêu\n\nChốt boundary cho feature Approval Dashboard trước khi agent implement.\n\n## Owner\n\n- Architect: Sample Architect\n- Engineering owner: Platform Team\n- Domain owner: Sales Operations\n\n## Context\n\nYêu cầu duyệt chiết khấu đang nằm trong Sales domain. Dashboard mới chỉ được đọc request và gửi quyết định approve/reject qua API đã kiểm quyền.\n\n## Decision\n\nDashboard thuộc module `approval-ui`. Logic quyền và trạng thái request thuộc module `discount-approval`. UI không ghi trực tiếp dữ liệu request.\n\n## Alternatives\n\n- Đưa logic duyệt vào frontend: loại vì dễ bypass quyền.\n- Cho UI ghi thẳng database: loại vì phá data ownership và audit.\n\n## Consequences\n\n- Frontend phụ thuộc API contract của `discount-approval`.\n- Backend phải cung cấp error model rõ cho exceeded-limit, stale-request và forbidden.\n- Audit trail nằm trong backend.\n\n## Rollback path\n\nẨn dashboard bằng feature flag và quay về flow duyệt cũ nếu contract/API có lỗi.\n\n## Checklist pass/fail\n\n- Pass vì data ownership, permission model và rollback path rõ.\n- Fail nếu frontend tự quyết quyền hoặc ghi dữ liệu trực tiếp.\n\n## Reviewer\n\n- Architect: approved\n- Security: approved with audit requirement\n- Domain: approved\n\n"
+  },
+  {
+    "id": "examples-sample-enterprise-feature-agent-task-brief",
+    "category": "Practical Examples",
+    "title": "Agent Task Brief - Approval Dashboard UI",
+    "path": "examples/sample-enterprise-feature/agent-task-brief.md",
+    "content": "# Agent Task Brief - Approval Dashboard UI\n\n## Operating principle\n\nHuman owns intent, architecture, design standard, contracts; agents own execution inside constraints.\n\n## Owner\n\n- Human supervisor: Frontend Lead\n- Agent/tool: Codex\n- Reviewer: Frontend Lead\n\n## Input bắt buộc\n\n- Feature spec: `feature-spec.md`\n- ADR: `adr.md`\n- UI contract: `ui-component-contract.md`\n- Module contract: `module-contract.md`\n\n## Output bắt buộc\n\n- Allowed scope: approval dashboard UI files and related tests.\n- Forbidden scope: backend permission logic, API schema changes, design token changes.\n- Tests/evals: component tests, accessibility check, visual regression for dashboard states.\n- Escalation: stop if API contract is insufficient or UI requires a new component pattern.\n\n## Checklist pass/fail\n\n- Pass khi implementation không tự quyết architecture, UI standard hoặc module contract.\n- Fail khi agent sửa backend authorization hoặc hard-code style.\n\n## Reviewer\n\n- Supervisor: Frontend Lead\n- Design reviewer: Sample Design Lead\n- Domain reviewer: Sales Operations if workflow changes\n\n"
+  },
+  {
+    "id": "examples-sample-enterprise-feature-feature-spec",
+    "category": "Practical Examples",
+    "title": "Sample Feature Spec - Approval Dashboard",
+    "path": "examples/sample-enterprise-feature/feature-spec.md",
+    "content": "# Sample Feature Spec - Approval Dashboard\n\n## Mục tiêu\n\nCho phép quản lý duyệt yêu cầu chiết khấu trong một dashboard thống nhất, giảm thời gian xử lý và tránh duyệt sai quyền.\n\n## Owner\n\n- Product owner: Sample Product Lead\n- Domain owner: Sales Operations\n- Engineering owner: Platform Team\n\n## Input bắt buộc\n\n- Người dùng: sales manager.\n- Business outcome: giảm thời gian duyệt yêu cầu chiết khấu.\n- Ràng buộc: không cho phép duyệt nếu vượt hạn mức quyền.\n\n## Output bắt buộc\n\n- Danh sách yêu cầu chờ duyệt.\n- Chi tiết yêu cầu.\n- Hành động approve/reject với lý do.\n- Audit trail cho mọi hành động.\n\n## Acceptance criteria\n\n- [ ] Manager chỉ thấy yêu cầu trong phạm vi quyền.\n- [ ] Yêu cầu vượt hạn mức bị chặn và hiển thị lý do.\n- [ ] Approve/reject ghi audit trail.\n- [ ] UI có loading, empty, error, disabled states.\n\n## Checklist pass/fail\n\n- Pass khi workflow nghiệp vụ, UI, quyền và audit đều rõ.\n- Fail nếu agent phải tự quyết permission model hoặc UI pattern.\n\n## Reviewer\n\n- Product: Sample Product Lead\n- Domain: Sales Operations\n- Engineering: Platform Team\n\n"
+  },
+  {
+    "id": "examples-sample-enterprise-feature-merge-gate-report",
+    "category": "Practical Examples",
+    "title": "Merge Gate Report - Approval Dashboard",
+    "path": "examples/sample-enterprise-feature/merge-gate-report.md",
+    "content": "# Merge Gate Report - Approval Dashboard\n\n## Operating principle\n\nHuman owns intent, architecture, design standard, contracts; agents own execution inside constraints.\n\n## Owner\n\n- Implementation owner: Frontend Team\n- Supervisor: Frontend Lead\n- Reviewer: Platform Team\n\n## Change summary\n\n- What changed: added Approval Dashboard UI and tests.\n- Why: managers need a controlled approval workflow for discount requests.\n- Scope: frontend UI only; backend API contract unchanged.\n\n## Evidence\n\n- Tests/evals đã chạy: component tests, contract mock tests, accessibility check.\n- Contract không vỡ: API calls match `module-contract.md`.\n- Integration/E2E result: pending list and approve/reject happy path covered.\n- Screenshot diff nếu có UI: dashboard default/loading/empty/error approved.\n- Accessibility/responsive result: keyboard focus and mobile stacked rows checked.\n- Security/threat-model check: no frontend bypass of permission model.\n\n## Reviewer approval\n\n| Reviewer | Area | Decision | Notes |\n|---|---|---|---|\n| Sample Product Lead | Product/domain | Approved | Workflow matches spec |\n| Sample Architect | Architecture | Approved | Boundary respected |\n| Sample Design Lead | Design/UI | Approved | Uses design system |\n| Frontend Lead | Engineering | Approved | Tests pass |\n\n## Checklist pass/fail\n\n- Pass vì evidence đầy đủ và reviewer đã duyệt.\n- Fail nếu thiếu screenshot diff, contract test hoặc approval.\n\n## Reviewer\n\n- Final approver: Frontend Lead\n\n"
+  },
+  {
+    "id": "examples-sample-enterprise-feature-module-contract",
+    "category": "Practical Examples",
+    "title": "Module Contract - discount-approval",
+    "path": "examples/sample-enterprise-feature/module-contract.md",
+    "content": "# Module Contract - discount-approval\n\n## Mục tiêu\n\nĐịnh nghĩa contract giữa Approval Dashboard và module duyệt chiết khấu.\n\n## Owner\n\n- Module owner: Sales Platform\n- Domain owner: Sales Operations\n- Architect: Sample Architect\n\n## Output bắt buộc\n\n- Module responsibility: kiểm quyền, trạng thái request, approve/reject, audit.\n- Public API:\n  - `GET /approval-requests?status=pending`\n  - `GET /approval-requests/{id}`\n  - `POST /approval-requests/{id}/approve`\n  - `POST /approval-requests/{id}/reject`\n- Data owned: approval request, approval decision, audit event.\n- Error model: forbidden, exceeded_limit, stale_request, validation_error.\n- Security boundary: manager role + approval limit.\n- Contract tests: request visibility, approve success, reject success, exceeded limit, stale request.\n\n## Checklist pass/fail\n\n- Pass khi UI chỉ dùng API contract và không ghi data trực tiếp.\n- Fail khi data ownership hoặc error model bị thay đổi mà không cập nhật ADR/contract.\n\n## Reviewer\n\n- Module owner: Sales Platform\n- Consumer owner: Frontend Team\n- Domain: Sales Operations\n\n"
+  },
+  {
+    "id": "examples-sample-enterprise-feature-ui-component-contract",
+    "category": "Practical Examples",
+    "title": "UI Component Contract - Approval Request Table",
+    "path": "examples/sample-enterprise-feature/ui-component-contract.md",
+    "content": "# UI Component Contract - Approval Request Table\n\n## Mục tiêu\n\nĐảm bảo dashboard dùng đúng design system và đủ state.\n\n## Owner\n\n- Designer: Sample Design Lead\n- Frontend owner: Frontend Team\n\n## Output bắt buộc\n\n- Component name: `ApprovalRequestTable`\n- Purpose: hiển thị danh sách request chờ duyệt.\n- States: default, loading, empty, error, row-selected, action-disabled.\n- Token usage: dùng token spacing, typography, color semantic status.\n- Responsive behavior: desktop table, mobile stacked rows.\n- Accessibility: keyboard navigation, visible focus, status text không chỉ dựa vào màu.\n\n## Checklist pass/fail\n\n- Pass khi đủ states, không hard-code style và screenshot diff được duyệt.\n- Fail khi text tràn, thiếu empty/error state hoặc tạo button style mới.\n\n## Reviewer\n\n- Design: Sample Design Lead\n- Frontend: Frontend Team\n- Product: Sample Product Lead\n\n"
+  }
+];
+    
+    // Path mapping for markdown links conversion
+    const pathMap = {
+  "Agentic_SDLC_Deep_Dive.md": "agentic_sdlc_deep_dive",
+  "Agentic_SDLC_Master_Map.md": "agentic_sdlc_master_map",
+  "README.md": "readme",
+  "checklists/architecture.md": "checklists-architecture",
+  "architecture.md": "checklists-architecture",
+  "checklists/multi-agent.md": "checklists-multi-agent",
+  "multi-agent.md": "checklists-multi-agent",
+  "checklists/release-readiness.md": "checklists-release-readiness",
+  "release-readiness.md": "checklists-release-readiness",
+  "checklists/module-large-system.md": "checklists-module-large-system",
+  "module-large-system.md": "checklists-module-large-system",
+  "checklists/ui-ux.md": "checklists-ui-ux",
+  "ui-ux.md": "checklists-ui-ux",
+  "checklists/observability.md": "checklists-observability",
+  "observability.md": "checklists-observability",
+  "docs/00-overview.md": "docs-00-overview",
+  "00-overview.md": "docs-00-overview",
+  "docs/07-multi-agent-orchestration.md": "docs-07-multi-agent-orchestration",
+  "07-multi-agent-orchestration.md": "docs-07-multi-agent-orchestration",
+  "docs/09-adoption-roadmap.md": "docs-09-adoption-roadmap",
+  "09-adoption-roadmap.md": "docs-09-adoption-roadmap",
+  "docs/04-ui-ux-control-system.md": "docs-04-ui-ux-control-system",
+  "04-ui-ux-control-system.md": "docs-04-ui-ux-control-system",
+  "docs/01-agentic-sdlc-lifecycle.md": "docs-01-agentic-sdlc-lifecycle",
+  "01-agentic-sdlc-lifecycle.md": "docs-01-agentic-sdlc-lifecycle",
+  "docs/03-quality-control-matrix.md": "docs-03-quality-control-matrix",
+  "03-quality-control-matrix.md": "docs-03-quality-control-matrix",
+  "docs/08-observability-evals-governance.md": "docs-08-observability-evals-governance",
+  "08-observability-evals-governance.md": "docs-08-observability-evals-governance",
+  "docs/06-large-module-delivery.md": "docs-06-large-module-delivery",
+  "06-large-module-delivery.md": "docs-06-large-module-delivery",
+  "docs/05-architecture-governance.md": "docs-05-architecture-governance",
+  "05-architecture-governance.md": "docs-05-architecture-governance",
+  "docs/02-enterprise-delivery-playbook.md": "docs-02-enterprise-delivery-playbook",
+  "02-enterprise-delivery-playbook.md": "docs-02-enterprise-delivery-playbook",
+  "examples/sample-AGENTS.md": "examples-sample-agents",
+  "sample-AGENTS.md": "examples-sample-agents",
+  "examples/sample-enterprise-feature/merge-gate-report.md": "examples-sample-enterprise-feature-merge-gate-report",
+  "merge-gate-report.md": "templates-agents-merge-gate-report",
+  "examples/sample-enterprise-feature/module-contract.md": "examples-sample-enterprise-feature-module-contract",
+  "module-contract.md": "templates-modules-module-contract",
+  "examples/sample-enterprise-feature/agent-task-brief.md": "examples-sample-enterprise-feature-agent-task-brief",
+  "agent-task-brief.md": "templates-agents-agent-task-brief",
+  "examples/sample-enterprise-feature/feature-spec.md": "examples-sample-enterprise-feature-feature-spec",
+  "feature-spec.md": "templates-specs-feature-spec",
+  "examples/sample-enterprise-feature/ui-component-contract.md": "examples-sample-enterprise-feature-ui-component-contract",
+  "ui-component-contract.md": "examples-sample-enterprise-feature-ui-component-contract",
+  "examples/sample-enterprise-feature/adr.md": "examples-sample-enterprise-feature-adr",
+  "adr.md": "templates-architecture-adr",
+  "templates/quality/eval-plan.md": "templates-quality-eval-plan",
+  "eval-plan.md": "templates-quality-eval-plan",
+  "templates/quality/quality-control-matrix.md": "templates-quality-quality-control-matrix",
+  "quality-control-matrix.md": "templates-quality-quality-control-matrix",
+  "templates/quality/release-gate.md": "templates-quality-release-gate",
+  "release-gate.md": "templates-quality-release-gate",
+  "templates/quality/production-readiness-checklist.md": "templates-quality-production-readiness-checklist",
+  "production-readiness-checklist.md": "templates-quality-production-readiness-checklist",
+  "templates/specs/product-requirement.md": "templates-specs-product-requirement",
+  "product-requirement.md": "templates-specs-product-requirement",
+  "templates/specs/feature-spec.md": "templates-specs-feature-spec",
+  "templates/specs/definition-of-done.md": "templates-specs-definition-of-done",
+  "definition-of-done.md": "templates-specs-definition-of-done",
+  "templates/agents/merge-gate-report.md": "templates-agents-merge-gate-report",
+  "templates/agents/agent-task-brief.md": "templates-agents-agent-task-brief",
+  "templates/agents/root-AGENTS.md": "templates-agents-root-agents",
+  "root-AGENTS.md": "templates-agents-root-agents",
+  "templates/agents/module-AGENTS.md": "templates-agents-module-agents",
+  "module-AGENTS.md": "templates-agents-module-agents",
+  "templates/agents/multi-agent-ownership-map.md": "templates-agents-multi-agent-ownership-map",
+  "multi-agent-ownership-map.md": "templates-agents-multi-agent-ownership-map",
+  "templates/architecture/threat-model.md": "templates-architecture-threat-model",
+  "threat-model.md": "templates-architecture-threat-model",
+  "templates/architecture/architecture-freeze-checklist.md": "templates-architecture-architecture-freeze-checklist",
+  "architecture-freeze-checklist.md": "templates-architecture-architecture-freeze-checklist",
+  "templates/architecture/architecture-review.md": "templates-architecture-architecture-review",
+  "architecture-review.md": "templates-architecture-architecture-review",
+  "templates/architecture/adr.md": "templates-architecture-adr",
+  "templates/ui-ux/design-system-contract.md": "templates-ui-ux-design-system-contract",
+  "design-system-contract.md": "templates-ui-ux-design-system-contract",
+  "templates/ui-ux/ui-review-checklist.md": "templates-ui-ux-ui-review-checklist",
+  "ui-review-checklist.md": "templates-ui-ux-ui-review-checklist",
+  "templates/ui-ux/visual-regression-checklist.md": "templates-ui-ux-visual-regression-checklist",
+  "visual-regression-checklist.md": "templates-ui-ux-visual-regression-checklist",
+  "templates/ui-ux/component-contract.md": "templates-ui-ux-component-contract",
+  "component-contract.md": "templates-ui-ux-component-contract",
+  "templates/modules/data-ownership.md": "templates-modules-data-ownership",
+  "data-ownership.md": "templates-modules-data-ownership",
+  "templates/modules/module-contract.md": "templates-modules-module-contract",
+  "templates/modules/e2e-business-flow.md": "templates-modules-e2e-business-flow",
+  "e2e-business-flow.md": "templates-modules-e2e-business-flow",
+  "templates/modules/domain-boundary.md": "templates-modules-domain-boundary",
+  "domain-boundary.md": "templates-modules-domain-boundary"
+};
+
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Configure marked to intercept code blocks for mermaid and render icons/tables
+    const renderer = new marked.Renderer();
+    
+    // Overriding code renderer to capture Mermaid syntax
+    renderer.code = function(code, language, escaped) {
+      if (language === 'mermaid') {
+        return `<div class="mermaid-container"><div class="mermaid">${code}</div></div>`;
+      }
+      
+      // Escape HTML to prevent broken layouts inside pre/code
+      const safeCode = code
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+      
+      const copyBtn = `<button class="copy-btn" onclick="copyToClipboard(this)" title="Copy code"><i data-lucide="copy" style="width: 14px; height: 14px;"></i></button>`;
+      
+      return `<pre style="position: relative;">${copyBtn}<code class="language-${language || 'text'}">${safeCode}</code></pre>`;
+    };
+
+    marked.setOptions({
+      renderer: renderer,
+      gfm: true,
+      breaks: true
+    });
+
+    // Initialize Mermaid Configuration
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'default',
+      securityLevel: 'loose',
+      flowchart: { useMaxWidth: true, htmlLabels: true }
+    });
+
+    // Global App States
+    let currentDocId = "";
+    
+    // Icon Mapping for Sidebar Categories
+    const categoryIcons = {
+      'Core Guides': 'book-open',
+      'Detailed Chapters': 'file-text',
+      'Verification Checklists': 'check-square',
+      'Operational Templates': 'layout-template',
+      'Practical Examples': 'code'
+    };
+
+    // DOM Elements
+    const sidebarNav = document.getElementById('sidebar-nav');
+    const documentContent = document.getElementById('document-content');
+    const searchResults = document.getElementById('search-results');
+    const searchResultsList = document.getElementById('search-results-list');
+    const searchInput = document.getElementById('search-input');
+    const tocList = document.getElementById('toc-list');
+    const breadcrumbs = document.getElementById('breadcrumbs');
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menu-toggle');
+
+    // Clipboard copy helper
+    function copyToClipboard(btn) {
+      const pre = btn.closest('pre');
+      const code = pre.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerHTML = `<i data-lucide="check" style="width: 14px; height: 14px; color: #34c759;"></i>`;
+        lucide.createIcons();
+        setTimeout(() => {
+          btn.innerHTML = `<i data-lucide="copy" style="width: 14px; height: 14px;"></i>`;
+          lucide.createIcons();
+        }, 2000);
+      });
+    }
+
+    // Path normalization helper for links
+    function resolveDocId(href) {
+      let cleanPath = href.replace(/^(\.\.\/|\.\/)+/, '');
+      if (pathMap[cleanPath]) {
+        return pathMap[cleanPath];
+      }
+      // Fallback: match by basename
+      const base = cleanPath.split('/').pop();
+      if (pathMap[base]) {
+        return pathMap[base];
+      }
+      return null;
+    }
+
+    // Search Diacritic remover
+    function removeDiacritics(str) {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
+
+    // Custom Alert Parser
+    function parseAlerts(html) {
+      const alertClasses = {
+        'NOTE': 'alert-note',
+        'TIP': 'alert-tip',
+        'IMPORTANT': 'alert-important',
+        'WARNING': 'alert-warning',
+        'CAUTION': 'alert-caution'
+      };
+      const alertTitles = {
+        'NOTE': 'Lưu ý',
+        'TIP': 'Gợi ý',
+        'IMPORTANT': 'Quan trọng',
+        'WARNING': 'Cảnh báo',
+        'CAUTION': 'Thận trọng'
+      };
+      const alertIcons = {
+        'NOTE': '<i data-lucide="info" style="width: 16px; height: 16px; margin-right: 8px;"></i>',
+        'TIP': '<i data-lucide="lightbulb" style="width: 16px; height: 16px; margin-right: 8px;"></i>',
+        'IMPORTANT': '<i data-lucide="alert-circle" style="width: 16px; height: 16px; margin-right: 8px;"></i>',
+        'WARNING': '<i data-lucide="alert-triangle" style="width: 16px; height: 16px; margin-right: 8px;"></i>',
+        'CAUTION': '<i data-lucide="shield-alert" style="width: 16px; height: 16px; margin-right: 8px;"></i>'
+      };
+      
+      return html.replace(/<blockquote>\s*<p>\s*\?\?\[\!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*(?:<br\s*\/?>)?([\s\S]*?)<\/p>\s*<\/blockquote>/gi, (match, type, content) => {
+        type = type.toUpperCase();
+        return `<div class="custom-alert ${alertClasses[type]}">
+          <div class="custom-alert-header">
+            ${alertIcons[type]}
+            <span class="custom-alert-title">${alertTitles[type]}</span>
+          </div>
+          <div class="custom-alert-content">${content}</div>
+        </div>`;
+      });
+    }
+
+    // Build sidebar navigation dynamically
+    function renderSidebar() {
+      const categories = [...new Set(docs.map(doc => doc.category))];
+      let navHtml = "";
+      
+      categories.forEach(category => {
+        const categoryDocs = docs.filter(doc => doc.category === category);
+        const iconName = categoryIcons[category] || 'file';
+        
+        navHtml += `
+          <div class="nav-category">
+            <div class="category-title">
+              <span>${category}</span>
+              <i data-lucide="${iconName}" style="width: 12px; height: 12px;"></i>
+            </div>
+            <ul class="nav-list">
+        `;
+        
+        categoryDocs.forEach(doc => {
+          navHtml += `
+            <li>
+              <button class="nav-item-btn" data-id="${doc.id}" onclick="navigateTo('${doc.id}')">
+                <i data-lucide="file-text" class="nav-icon" style="width: 15px; height: 15px; flex-shrink: 0;"></i>
+                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${doc.title}</span>
+              </button>
+            </li>
+          `;
+        });
+        
+        navHtml += `
+            </ul>
+          </div>
+        `;
+      });
+      
+      sidebarNav.innerHTML = navHtml;
+      lucide.createIcons();
+    }
+
+    // Handle Article Selection
+    async function loadDocument(id) {
+      const doc = docs.find(d => d.id === id);
+      if (!doc) return;
+      
+      currentDocId = id;
+      document.title = `${doc.title} — Agentic SDLC Portal`;
+
+      // Update Navigation State
+      document.querySelectorAll('.nav-item-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-id') === id);
+      });
+
+      // Update Breadcrumbs
+      breadcrumbs.innerHTML = `
+        <span>${doc.category}</span>
+        <span class="breadcrumb-sep">&gt;</span>
+        <span style="color: var(--text-primary); font-weight: 500;">${doc.path.split('/').pop()}</span>
+      `;
+
+      // Toggle views
+      documentContent.style.display = 'block';
+      searchResults.style.display = 'none';
+
+      // Parse Markdown to HTML
+      let html = marked.parse(doc.content);
+      
+      // Translate Alerts
+      html = parseAlerts(html);
+
+      // Render Content
+      documentContent.innerHTML = html;
+
+      // Initialize Icons
+      lucide.createIcons();
+
+      // Highlight code blocks
+      Prism.highlightAllUnder(documentContent);
+
+      // Render Mermaid Diagrams
+      try {
+        await mermaid.run({
+          querySelector: '.mermaid'
+        });
+      } catch (err) {
+        console.error("Mermaid parsing error:", err);
+      }
+
+      // Build Table of Contents
+      buildTOC();
+
+      // Intercept and resolve cross links inside documentContent
+      documentContent.querySelectorAll('a').forEach(a => {
+        const href = a.getAttribute('href');
+        if (href && !href.startsWith('http') && !href.startsWith('#') && href.endsWith('.md')) {
+          const resolved = resolveDocId(href);
+          if (resolved) {
+            a.setAttribute('href', `#${resolved}`);
+            a.onclick = function(e) {
+              e.preventDefault();
+              navigateTo(resolved);
+            };
+          }
+        }
+      });
+
+      // Reset Content Scroll
+      document.getElementById('content-container').scrollTop = 0;
+    }
+
+    // Dynamic TOC builder
+    function buildTOC() {
+      const headings = documentContent.querySelectorAll('h2, h3');
+      if (headings.length === 0) {
+        tocList.innerHTML = '<li><span class="toc-link" style="color: var(--text-secondary); cursor: default;">Không có mục lục</span></li>';
+        return;
+      }
+
+      let tocHtml = "";
+      headings.forEach((heading, idx) => {
+        const text = heading.textContent;
+        const tag = heading.tagName.toLowerCase();
+        
+        // Ensure element has an ID to link to
+        const headingId = `heading-${idx}`;
+        heading.setAttribute('id', headingId);
+
+        tocHtml += `
+          <li>
+            <a class="toc-link ${tag === 'h3' ? 'indent-h3' : ''}" data-target="${headingId}" onclick="scrollToHeading('${headingId}')">
+              ${text}
+            </a>
+          </li>
+        `;
+      });
+      
+      tocList.innerHTML = tocHtml;
+      
+      // Intersection Observer to highlight active heading on scroll
+      setupTOCScrollSpy();
+    }
+
+    function scrollToHeading(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function setupTOCScrollSpy() {
+      const headings = Array.from(documentContent.querySelectorAll('h2, h3'));
+      const tocLinks = Array.from(document.querySelectorAll('.toc-link'));
+      const container = document.getElementById('content-container');
+      
+      container.onscroll = () => {
+        let activeId = "";
+        const scrollPos = container.scrollTop + 100;
+        
+        for (const heading of headings) {
+          if (heading.offsetTop <= scrollPos) {
+            activeId = heading.getAttribute('id');
+          } else {
+            break;
+          }
+        }
+        
+        tocLinks.forEach(link => {
+          const target = link.getAttribute('data-target');
+          link.classList.toggle('active', target === activeId);
+        });
+      };
+    }
+
+    // Dynamic Navigation Routing
+    function navigateTo(id) {
+      window.location.hash = id;
+      // Close sidebar on mobile
+      sidebar.classList.remove('open');
+    }
+
+    // Full-text Local Search Engine
+    function executeSearch(query) {
+      if (!query.trim()) {
+        // Reset to last active doc if empty
+        if (currentDocId) {
+          loadDocument(currentDocId);
+        }
+        return;
+      }
+
+      documentContent.style.display = 'none';
+      searchResults.style.display = 'flex';
+      
+      breadcrumbs.innerHTML = `
+        <span>Tìm kiếm</span>
+        <span class="breadcrumb-sep">&gt;</span>
+        <span style="color: var(--text-primary); font-weight: 500;">"${query}"</span>
+      `;
+
+      const normalizedQuery = removeDiacritics(query);
+      const results = [];
+
+      docs.forEach(doc => {
+        const titleMatch = removeDiacritics(doc.title).includes(normalizedQuery);
+        const contentNorm = removeDiacritics(doc.content);
+        const queryIndex = contentNorm.indexOf(normalizedQuery);
+        
+        if (titleMatch || queryIndex !== -1) {
+          let snippet = "";
+          
+          if (queryIndex !== -1) {
+            const start = Math.max(0, queryIndex - 60);
+            const end = Math.min(doc.content.length, queryIndex + normalizedQuery.length + 100);
+            let rawSnippet = doc.content.substring(start, end);
+            
+            // Format highlights
+            const searchPattern = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+            snippet = rawSnippet.replace(searchPattern, '<span class="highlight">$1</span>');
+            snippet = (start > 0 ? '...' : '') + snippet + (end < doc.content.length ? '...' : '');
+          } else {
+            snippet = doc.content.substring(0, 160) + '...';
+          }
+
+          results.push({
+            id: doc.id,
+            title: doc.title,
+            path: doc.path,
+            snippet: snippet
+          });
+        }
+      });
+
+      // Show Results
+      if (results.length === 0) {
+        searchResultsList.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+          <i data-lucide="frown" style="width: 48px; height: 48px; margin-bottom: 12px;"></i>
+          <p>Không tìm thấy kết quả nào phù hợp với từ khóa.</p>
+        </div>`;
+      } else {
+        let listHtml = "";
+        results.forEach(res => {
+          listHtml += `
+            <div class="search-result-item" onclick="navigateTo('${res.id}'); document.getElementById('search-input').value = '';">
+              <div class="search-result-title">${res.title}</div>
+              <div class="search-result-snippet">${res.snippet}</div>
+              <div class="search-result-path">${res.path}</div>
+            </div>
+          `;
+        });
+        searchResultsList.innerHTML = listHtml;
+      }
+      lucide.createIcons();
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('input', (e) => {
+      executeSearch(e.target.value);
+    });
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    // Handle Hash Navigation (browser history)
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.substring(1);
+      if (hash) {
+        loadDocument(hash);
+      }
+    });
+
+    // On Load Initial Setup
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSidebar();
+      
+      const hash = window.location.hash.substring(1);
+      if (hash && docs.some(d => d.id === hash)) {
+        loadDocument(hash);
+      } else {
+        // Load default document (usually README or overview)
+        const defaultDoc = docs.find(d => d.id === 'readme') || docs[0];
+        if (defaultDoc) {
+          navigateTo(defaultDoc.id);
+        }
+      }
+    });
+
+  </script>
+</body>
+</html>
