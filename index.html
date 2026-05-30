@@ -1983,10 +1983,22 @@
     // Configure marked to intercept code blocks for mermaid and render copy button
     const renderer = new marked.Renderer();
     
-    renderer.code = function(code, language, escaped) {
-      if (language === 'mermaid') {
+    renderer.code = function(codeOrToken, language, escaped) {
+      let code = "";
+      let lang = "";
+      
+      if (typeof codeOrToken === 'object' && codeOrToken !== null) {
+        code = codeOrToken.text || "";
+        lang = codeOrToken.lang || "";
+      } else {
+        code = codeOrToken || "";
+        lang = language || "";
+      }
+      
+      if (lang === 'mermaid') {
         return `<div class="mermaid-container"><div class="mermaid">${code}</div></div>`;
       }
+      
       const safeCode = code
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -1995,7 +2007,7 @@
         .replace(/'/g, "&#039;");
       
       const copyBtn = `<button class="copy-btn" onclick="copyToClipboard(this)" title="Copy code">${SVGS.copy}</button>`;
-      return `<pre style="position: relative;">${copyBtn}<code class="language-${language || 'text'}">${safeCode}</code></pre>`;
+      return `<pre style="position: relative;">${copyBtn}<code class="language-${lang || 'text'}">${safeCode}</code></pre>`;
     };
 
     marked.setOptions({
