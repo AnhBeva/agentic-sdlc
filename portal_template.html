@@ -1,0 +1,2339 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic SDLC — Operating System Portal</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Cổng thông tin quy trình Agentic SDLC - Cẩm nang thiết kế, vận hành, kiểm soát chất lượng và tự cải thiện cho AI Coding Agents và AI nghiệp vụ.">
+  <meta name="keywords" content="Agentic SDLC, AI Agent, Software Development Life Cycle, Software Engineering, Observability, OWASP Agentic, DevOps, CI/CD">
+  <meta name="author" content="AnhBeva">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Markdown, Code Highlighting & Diagrams Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <!-- Prism JS for beautiful Apple-style code highlighting -->
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- Mermaid.js for flowcharts, diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+
+  <style>
+    /* Design Tokens - Clean Premium Apple Light Theme */
+    :root {
+      --bg-main: #f5f5f7;
+      --bg-card: #ffffff;
+      --bg-sidebar: rgba(245, 245, 247, 0.88);
+      --border-color: rgba(0, 0, 0, 0.08);
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-body: #333336;
+      --accent: #0066cc;
+      --accent-hover: #0077ed;
+      --accent-soft: #e8f2fc;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.09);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      --font-heading: 'Outfit', -apple-system, sans-serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    /* CSS Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-main);
+      color: var(--text-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Main Layout */
+    .app-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 320px;
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex-shrink: 0;
+      z-index: 100;
+      transition: var(--transition);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0066cc, #54a0ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 102, 204, 0.2);
+    }
+
+    .logo-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      background-color: rgba(0, 0, 0, 0.04);
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-primary);
+      transition: var(--transition);
+    }
+
+    .search-input:focus {
+      outline: none;
+      background-color: var(--bg-card);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
+    }
+
+    .search-icon-wrapper {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      pointer-events: none;
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Sidebar Nav List */
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+    }
+
+    .nav-category {
+      margin-bottom: 24px;
+    }
+
+    .category-title {
+      font-family: var(--font-heading);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding-left: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .nav-item-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text-body);
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: var(--transition);
+      overflow: hidden;
+    }
+
+    .nav-item-btn:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+      color: var(--text-primary);
+    }
+
+    .nav-item-btn.active {
+      background-color: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+      position: relative;
+    }
+
+    .nav-item-btn.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      background-color: var(--accent);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .nav-icon {
+      color: var(--text-secondary);
+      transition: var(--transition);
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .nav-item-btn.active .nav-icon {
+      color: var(--accent);
+    }
+
+    /* Subcategory Hierarchical Tree Styling */
+    .subcategory-wrapper {
+      margin-bottom: 2px;
+    }
+    
+    .nav-subcat-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text-body);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: left;
+    }
+    
+    .nav-subcat-btn:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+      color: var(--text-primary);
+    }
+    
+    .subcat-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 2px;
+      margin-bottom: 6px;
+    }
+    
+    .nav-item-btn.indent {
+      padding-left: 28px;
+      font-size: 13px;
+    }
+    
+    .subcat-count {
+      font-size: 10px;
+      background-color: rgba(0, 0, 0, 0.05);
+      color: var(--text-secondary);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    
+    .nav-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex-grow: 1;
+    }
+
+    /* Main Area Styling */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      background-color: var(--bg-card);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Top Bar Header */
+    .topbar {
+      height: 64px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      background-color: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 50;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .menu-toggle-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--text-primary);
+      width: 24px;
+      height: 24px;
+    }
+
+    .breadcrumbs {
+      font-size: 13px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+
+    .breadcrumb-sep {
+      color: #d2d2d7;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-body);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .action-btn:hover {
+      background-color: var(--bg-main);
+      border-color: #d2d2d7;
+      color: var(--text-primary);
+    }
+
+    /* Document Layout */
+    .document-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .content-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 48px;
+      scroll-behavior: smooth;
+    }
+
+    .article-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Table of Contents */
+    .toc-wrapper {
+      width: 260px;
+      border-left: 1px solid var(--border-color);
+      padding: 32px 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .toc-title {
+      font-family: var(--font-heading);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toc-link {
+      font-size: 13px;
+      color: var(--text-body);
+      text-decoration: none;
+      transition: var(--transition);
+      cursor: pointer;
+      display: block;
+      border-left: 2px solid transparent;
+      padding-left: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .toc-link:hover {
+      color: var(--accent);
+    }
+
+    .toc-link.active {
+      color: var(--accent);
+      font-weight: 600;
+      border-left-color: var(--accent);
+    }
+
+    .toc-link.indent-h3 {
+      padding-left: 20px;
+    }
+
+    /* Dynamic Cockpit Dashboard styles */
+    .dashboard-container {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      padding-bottom: 60px;
+    }
+
+    .dashboard-hero {
+      background: linear-gradient(135deg, #ffffff, #f5f5f7);
+      border: 1px solid var(--border-color);
+      padding: 48px;
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dashboard-hero::after {
+      content: '';
+      position: absolute;
+      top: -150px;
+      right: -150px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(0, 102, 204, 0.05) 0%, rgba(255,255,255,0) 70%);
+      pointer-events: none;
+    }
+
+    .dashboard-hero h1 {
+      font-family: var(--font-heading);
+      font-size: 34px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      letter-spacing: -0.8px;
+    }
+
+    .dashboard-hero p {
+      font-size: 15.5px;
+      color: var(--text-secondary);
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+    .dashboard-section-title {
+      font-family: var(--font-heading);
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    /* Card Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+    }
+
+    .metric-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+
+    .metric-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .metric-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background-color: var(--bg-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .metric-count {
+      font-family: var(--font-heading);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .metric-title {
+      font-family: var(--font-heading);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .metric-desc {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* Interactive Phase Timeline Flow */
+    .phase-timeline-container {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background-color: var(--bg-card);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .phase-steps-bar {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+      background-color: #fafafc;
+    }
+
+    .phase-step-btn {
+      flex: 1;
+      min-width: 110px;
+      padding: 16px 8px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+      border-right: 1px solid var(--border-color);
+    }
+
+    .phase-step-btn:last-child {
+      border-right: none;
+    }
+
+    .phase-step-btn:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .phase-step-btn.active {
+      background-color: var(--bg-card);
+      box-shadow: inset 0 -3px 0 0 var(--accent);
+    }
+
+    .phase-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+
+    .phase-step-btn.active .phase-number {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .phase-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .phase-step-btn.active .phase-name {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .phase-content-panel {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: #ffffff;
+    }
+
+    .phase-panel-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .phase-panel-title {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .phase-panel-desc {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+    }
+
+    .phase-links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .phase-links-column {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      background-color: #fafafc;
+    }
+
+    .column-title {
+      font-family: var(--font-heading);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .column-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .inline-link-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 8px;
+      border-radius: 4px;
+      transition: var(--transition);
+      background-color: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .inline-link-btn:hover {
+      background-color: var(--accent-soft);
+    }
+
+    .empty-state-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-style: italic;
+      padding-left: 8px;
+    }
+
+    /* Decision Helper Matrix */
+    .decision-helper-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .decision-row {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .decision-row:hover {
+      border-color: rgba(0, 102, 204, 0.4);
+    }
+
+    .decision-header {
+      width: 100%;
+      padding: 18px 24px;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .decision-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .decision-title {
+      font-family: var(--font-heading);
+      font-size: 15.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .decision-subtitle {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+    }
+
+    .decision-body {
+      display: none;
+      padding: 0 24px 24px 24px;
+      border-top: 1px solid var(--border-color);
+      background-color: #fafafc;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .decision-resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .decision-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--text-secondary);
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .decision-row.open .decision-arrow {
+      transform: rotate(90deg);
+      color: var(--accent);
+    }
+
+    .decision-row.open .decision-body {
+      display: flex;
+    }
+
+    /* Markdown styling (Apple style) */
+    .markdown-body {
+      font-family: var(--font-body);
+      font-size: 15.5px;
+      color: var(--text-body);
+      line-height: 1.7;
+      display: none;
+    }
+
+    .markdown-body h1 {
+      font-family: var(--font-heading);
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+      letter-spacing: -0.8px;
+      line-height: 1.25;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    .markdown-body h2 {
+      font-family: var(--font-heading);
+      font-size: 21px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 40px;
+      margin-bottom: 16px;
+      letter-spacing: -0.4px;
+      line-height: 1.3;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      padding-bottom: 8px;
+    }
+
+    .markdown-body h3 {
+      font-family: var(--font-heading);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 24px;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .markdown-body p {
+      margin-bottom: 20px;
+    }
+
+    .markdown-body a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid transparent;
+      transition: var(--transition);
+    }
+
+    .markdown-body a:hover {
+      border-bottom-color: var(--accent);
+    }
+
+    /* Lists styling */
+    .markdown-body ul, .markdown-body ol {
+      margin-bottom: 20px;
+      padding-left: 24px;
+    }
+
+    .markdown-body li {
+      margin-bottom: 8px;
+    }
+
+    .markdown-body li > ul, .markdown-body li > ol {
+      margin-top: 8px;
+      margin-bottom: 0;
+    }
+
+    /* checklists */
+    .markdown-body ul li input[type="checkbox"] {
+      margin-right: 8px;
+      accent-color: var(--accent);
+      transform: scale(1.1);
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+
+    /* Blockquotes */
+    .markdown-body blockquote {
+      border-left: 4px solid var(--accent);
+      padding: 12px 20px;
+      background-color: var(--bg-main);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin-bottom: 24px;
+      color: var(--text-body);
+      font-style: italic;
+    }
+
+    /* Tables */
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 28px;
+      font-size: 14px;
+      box-shadow: var(--shadow-sm);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .markdown-body th, .markdown-body td {
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    .markdown-body th {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-weight: 600;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .markdown-body td {
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+    }
+
+    .markdown-body tr:last-child td {
+      border-bottom: none;
+    }
+
+    .markdown-body tr:nth-child(even) td {
+      background-color: #fafafc;
+    }
+
+    /* Code Blocks */
+    .markdown-body code {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      background-color: var(--bg-main);
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: #bf3434;
+    }
+
+    .markdown-body pre {
+      background-color: #1e1e24;
+      padding: 18px;
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+    }
+
+    .markdown-body pre code {
+      background-color: transparent;
+      padding: 0;
+      color: #e5c07b;
+      font-size: 13px;
+    }
+
+    /* Custom Alerts (Github Alerts in Apple design) */
+    .custom-alert {
+      margin-bottom: 24px;
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      border-left: 4px solid transparent;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .custom-alert-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .custom-alert-title {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .custom-alert-content {
+      font-size: 14px;
+      color: var(--text-body);
+    }
+
+    .custom-alert-content p {
+      margin-bottom: 0 !important;
+    }
+
+    .alert-note {
+      background-color: #f2f7fc;
+      border-left-color: #0066cc;
+    }
+    .alert-note .custom-alert-title, .alert-note svg {
+      color: #0066cc;
+    }
+
+    .alert-tip {
+      background-color: #f2faf3;
+      border-left-color: #34c759;
+    }
+    .alert-tip .custom-alert-title, .alert-tip svg {
+      color: #34c759;
+    }
+
+    .alert-important {
+      background-color: #fbf5fc;
+      border-left-color: #af52de;
+    }
+    .alert-important .custom-alert-title, .alert-important svg {
+      color: #af52de;
+    }
+
+    .alert-warning {
+      background-color: #fff9f2;
+      border-left-color: #ff9500;
+    }
+    .alert-warning .custom-alert-title, .alert-warning svg {
+      color: #ff9500;
+    }
+
+    .alert-caution {
+      background-color: #fff2f2;
+      border-left-color: #ff3b30;
+    }
+    .alert-caution .custom-alert-title, .alert-caution svg {
+      color: #ff3b30;
+    }
+
+    /* Copy Code Button */
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #86868b;
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    .copy-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Mermaid Container */
+    .mermaid-container {
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mermaid {
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Search Results View */
+    .search-results-container {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .search-result-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-result-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+
+    .search-result-title {
+      font-family: var(--font-heading);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .search-result-snippet {
+      font-size: 13.5px;
+      color: var(--text-body);
+      line-height: 1.5;
+    }
+
+    .search-result-path {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      display: inline-block;
+      background-color: var(--bg-main);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .highlight {
+      background-color: rgba(255, 204, 0, 0.3);
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 1150px) {
+      .toc-wrapper {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: absolute;
+        left: -320px;
+        top: 0;
+        bottom: 0;
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .menu-toggle-btn {
+        display: block;
+      }
+
+      .content-container {
+        padding: 24px;
+      }
+      
+      .dashboard-hero {
+        padding: 28px;
+      }
+    }
+
+    /* Print styling */
+    @media print {
+      .sidebar, .topbar, .toc-wrapper, .copy-btn, .action-btn {
+        display: none !important;
+      }
+      .app-container {
+        height: auto;
+        overflow: visible;
+      }
+      .main-wrapper {
+        overflow: visible;
+      }
+      .content-container {
+        overflow: visible;
+        padding: 0;
+      }
+      .article-wrapper {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-container" onclick="loadDashboardView()">
+          <div class="logo-icon" id="logo-icon-svg"></div>
+          <div class="logo-title">Agentic SDLC OS</div>
+        </div>
+        <div class="search-wrapper">
+          <div class="search-icon-svg" id="search-icon-svg" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width:16px; height:16px; color: var(--text-secondary); pointer-events: none;"></div>
+          <input type="text" id="search-input" class="search-input" placeholder="Tìm kiếm tài liệu...">
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <!-- Dashboard Button -->
+        <ul class="nav-list" style="margin-bottom: 20px;">
+          <li>
+            <button class="nav-item-btn" id="dashboard-nav-btn" onclick="navigateTo('dashboard')">
+              <span class="nav-icon" id="home-icon-svg"></span>
+              <span style="font-weight: 600;">Dashboard Tổng Quan</span>
+            </button>
+          </li>
+        </ul>
+        
+        <div id="sidebar-nav-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle-btn" id="menu-toggle">
+            <!-- Dynamic menu SVG -->
+          </button>
+          <div class="breadcrumbs" id="breadcrumbs">
+            <!-- Dynamic breadcrumbs -->
+          </div>
+        </div>
+        
+        <div class="topbar-right">
+          <button class="action-btn" onclick="window.print()">
+            <span class="nav-icon" id="print-icon-svg" style="width:14px; height:14px; margin-right:4px;"></span>
+            In / Lưu PDF
+          </button>
+        </div>
+      </header>
+
+      <!-- Document Layout -->
+      <div class="document-layout">
+        
+        <!-- Content Container -->
+        <main class="content-container" id="content-container">
+          <div class="article-wrapper">
+            
+            <!-- Standard Document Content -->
+            <div id="document-content" class="markdown-body">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Dashboard Cockpit view -->
+            <div id="dashboard-view" class="dashboard-container">
+              <!-- Custom rendering -->
+            </div>
+
+            <!-- Search Results Display -->
+            <div id="search-results" class="search-results-container">
+              <h2 style="font-family: var(--font-heading); font-size: 24px; font-weight: 600; color: var(--text-primary); margin-bottom: 20px;">Kết quả tìm kiếm</h2>
+              <div id="search-results-list" style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Search matches go here -->
+              </div>
+            </div>
+
+          </div>
+        </main>
+
+        <!-- Right Sidebar Table of Contents -->
+        <aside class="toc-wrapper" id="toc-wrapper">
+          <div class="toc-title">Mục lục trang</div>
+          <ul class="toc-list" id="toc-list">
+            <!-- Rendered dynamically -->
+          </ul>
+        </aside>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Document Data and Application Logic -->
+  <script>
+    // Embedded Document Database (inserted by builder)
+    const docs = /* DOCS_DATABASE_PLACEHOLDER */;
+    
+    // Path mapping for markdown links conversion (inserted by builder)
+    const pathMap = /* PATH_MAP_PLACEHOLDER */;
+
+    // Vector Icon Definitions
+    const SVGS = {
+      cpu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="15" x2="23" y2="15"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="15" x2="4" y2="15"></line></svg>',
+      home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>',
+      search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+      folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
+      file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>',
+      chevronRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><polyline points="9 18 15 12 9 6"></polyline></svg>',
+      copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
+      printer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8\"></rect></svg>',
+      check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+      arrowRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>',
+      menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>',
+      frown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%; height:100%;"><circle cx="12" cy="12" r="10"></circle><path d="M16 16s-1.5-2-4-2-4 2-4 2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>'
+    };
+
+    // Icon helper
+    function getIcon(name, customStyle = '') {
+      return `<span class="nav-icon" style="${customStyle}">${SVGS[name] || ''}</span>`;
+    }
+
+    // Inject Static Vector Icons on startup
+    document.getElementById('logo-icon-svg').innerHTML = SVGS.cpu;
+    document.getElementById('search-icon-svg').innerHTML = SVGS.search;
+    document.getElementById('home-icon-svg').innerHTML = SVGS.home;
+    document.getElementById('print-icon-svg').innerHTML = SVGS.printer;
+    document.getElementById('menu-toggle').innerHTML = SVGS.menu;
+
+    // Phase timeline mapping data based on DOCUMENTATION_MAP.md
+    const PHASE_MAPPING = [
+      {
+        name: "Pha 1: Đặc tả ý định",
+        desc: "Xác lập yêu cầu nghiệp vụ, tiêu chí DoD, đặc tả tính năng và UI component contracts.",
+        playbooks: ["docs-01-agentic-sdlc-lifecycle", "docs-04-ui-ux-control-system"],
+        checklists: ["checklists-ui-ux"],
+        templates: ["templates-specs-product-requirement", "templates-specs-feature-spec", "templates-specs-definition-of-done", "templates-ui-ux-design-system-contract", "templates-ui-ux-component-contract"],
+        examples: ["examples-sample-enterprise-feature-feature-spec", "examples-sample-enterprise-feature-ui-component-contract"]
+      },
+      {
+        name: "Pha 2: Lập kế hoạch",
+        desc: "Phân rã tác vụ, thiết kế kiến trúc, chốt ADR và thiết lập quyền hạn cho Agent.",
+        playbooks: ["docs-05-architecture-governance", "docs-06-large-module-delivery", "docs-07-multi-agent-orchestration"],
+        checklists: ["checklists-architecture", "checklists-module-large-system", "checklists-multi-agent"],
+        templates: ["templates-architecture-adr", "templates-architecture-threat-model", "templates-architecture-architecture-freeze-checklist", "templates-modules-domain-boundary", "templates-modules-module-contract", "templates-modules-data-ownership", "templates-agents-agent-task-brief", "templates-agents-multi-agent-ownership-map", "templates-agents-root-agents", "templates-agents-module-agents"],
+        examples: ["examples-sample-enterprise-feature-adr", "examples-sample-enterprise-feature-module-contract", "examples-sample-enterprise-feature-agent-task-brief", "examples-sample-agents"]
+      },
+      {
+        name: "Pha 3: Thực thi",
+        desc: "AI Agent lập trình và thực thi công việc độc lập trong Sandbox/Isolated Worktree.",
+        playbooks: ["docs-07-multi-agent-orchestration"],
+        checklists: [],
+        templates: ["templates-agents-agent-task-brief", "templates-agents-root-agents", "templates-agents-module-agents"],
+        examples: ["examples-sample-enterprise-feature-agent-task-brief", "examples-sample-agents"]
+      },
+      {
+        name: "Pha 4: Kiểm thử & Đánh giá",
+        desc: "Chạy CI/CD tự động, unit evals, LLM-as-judge, visual regression, và contract tests.",
+        playbooks: ["docs-03-quality-control-matrix", "docs-08-observability-evals-governance"],
+        checklists: ["checklists-observability"],
+        templates: ["templates-quality-quality-control-matrix", "templates-quality-eval-plan", "templates-ui-ux-visual-regression-checklist"],
+        examples: []
+      },
+      {
+        name: "Pha 5: Review & Phê duyệt",
+        desc: "Con người kiểm soát chốt chặn (HITL) phê duyệt PR giao diện, kiến trúc, và tích hợp.",
+        playbooks: ["docs-02-enterprise-delivery-playbook"],
+        checklists: ["checklists-ui-ux", "checklists-architecture"],
+        templates: ["templates-agents-merge-gate-report", "templates-architecture-architecture-review", "templates-ui-ux-ui-review-checklist"],
+        examples: ["examples-sample-enterprise-feature-merge-gate-report"]
+      },
+      {
+        name: "Pha 6: Triển khai",
+        desc: "Tích hợp code và deploy lên môi trường Production qua hệ thống cổng chất lượng.",
+        playbooks: ["docs-02-enterprise-delivery-playbook"],
+        checklists: ["checklists-release-readiness"],
+        templates: ["templates-quality-release-gate", "templates-quality-production-readiness-checklist"],
+        examples: []
+      },
+      {
+        name: "Pha 7: Giám sát vận hành",
+        desc: "Vận hành liên tục 24/7, đo traces OpenTelemetry GenAI, giám sát chi phí và vòng lặp lỗi.",
+        playbooks: ["docs-08-observability-evals-governance"],
+        checklists: ["checklists-observability"],
+        templates: ["templates-quality-eval-plan"],
+        examples: []
+      },
+      {
+        name: "Pha 8: Học hỏi tự cải thiện",
+        desc: "Đánh giá lỗi, tự động tối ưu hóa prompt, mở rộng memory và tiến hóa kỹ năng của Agent.",
+        playbooks: ["docs-09-adoption-roadmap"],
+        checklists: [],
+        templates: [],
+        examples: []
+      }
+    ];
+
+    // Decision Helper Matrix based on DOCUMENTATION_MAP.md
+    const DECISION_MATRIX = [
+      {
+        problem: "Bắt đầu một tính năng mới",
+        desc: "Cần xác định tiêu chuẩn nghiệp vụ, ranh giới tính năng và lập định nghĩa DoD chi tiết.",
+        playbook: "docs-01-agentic-sdlc-lifecycle",
+        checklist: null,
+        templates: ["templates-specs-feature-spec", "templates-specs-definition-of-done"]
+      },
+      {
+        problem: "Chốt thiết kế kiến trúc",
+        desc: "Ra quyết định kiến trúc quan trọng khó đảo ngược, ranh giới DB, threat model bảo mật.",
+        playbook: "docs-05-architecture-governance",
+        checklist: "checklists-architecture",
+        templates: ["templates-architecture-adr", "templates-architecture-threat-model", "templates-architecture-architecture-freeze-checklist"]
+      },
+      {
+        problem: "Giữ tính đồng nhất UI/UX",
+        desc: "Đảm bảo giao diện Agent code không bị lệch spacing, token, vỡ responsive hay lệch Figma.",
+        playbook: "docs-04-ui-ux-control-system",
+        checklist: "checklists-ui-ux",
+        templates: ["templates-ui-ux-design-system-contract", "templates-ui-ux-component-contract", "templates-ui-ux-ui-review-checklist", "templates-ui-ux-visual-regression-checklist"]
+      },
+      {
+        problem: "Phân rã nghiệp vụ module lớn",
+        desc: "Xác lập Bounded Context, Domain boundary và phân định rõ quyền sở hữu data table của module.",
+        playbook: "docs-06-large-module-delivery",
+        checklist: "checklists-module-large-system",
+        templates: ["templates-modules-domain-boundary", "templates-modules-module-contract", "templates-modules-data-ownership", "templates-modules-e2e-business-flow"]
+      },
+      {
+        problem: "Chạy multi-agent song song",
+        desc: "Lập kế hoạch phân việc (Ownership Map), chia nhánh cô lập, cài đặt debate room tự sửa lỗi.",
+        playbook: "docs-07-multi-agent-orchestration",
+        checklist: "checklists-multi-agent",
+        templates: ["templates-agents-agent-task-brief", "templates-agents-multi-agent-ownership-map", "templates-agents-root-agents"]
+      },
+      {
+        problem: "Viết evals & giám sát 24/7",
+        desc: "Cấu hình OpenTelemetry trace, online evals, LLM-as-judge và lập dashboard cảnh báo runaway loop.",
+        playbook: "docs-08-observability-evals-governance",
+        checklist: "checklists-observability",
+        templates: ["templates-quality-quality-control-matrix", "templates-quality-eval-plan"]
+      },
+      {
+        problem: "Tích hợp và chuẩn bị release",
+        desc: "Duyệt báo cáo Merge Gate tự động, quét an ninh, kiểm tra checklist release gate trước khi ship.",
+        playbook: "docs-02-enterprise-delivery-playbook",
+        checklist: "checklists-release-readiness",
+        templates: ["templates-agents-merge-gate-report", "templates-quality-release-gate", "templates-quality-production-readiness-checklist"]
+      }
+    ];
+
+    // Configure marked to intercept code blocks for mermaid and render copy button
+    const renderer = new marked.Renderer();
+    
+    renderer.code = function(code, language, escaped) {
+      if (language === 'mermaid') {
+        return `<div class="mermaid-container"><div class="mermaid">${code}</div></div>`;
+      }
+      const safeCode = code
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+      
+      const copyBtn = `<button class="copy-btn" onclick="copyToClipboard(this)" title="Copy code">${SVGS.copy}</button>`;
+      return `<pre style="position: relative;">${copyBtn}<code class="language-${language || 'text'}">${safeCode}</code></pre>`;
+    };
+
+    marked.setOptions({
+      renderer: renderer,
+      gfm: true,
+      breaks: true
+    });
+
+    // Initialize Mermaid Configuration
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'default',
+      securityLevel: 'loose',
+      flowchart: { useMaxWidth: true, htmlLabels: true }
+    });
+
+    // Global App States
+    let currentDocId = "";
+    let activePhaseIdx = 0;
+    
+    // Icon Mapping for Sidebar Categories
+    const categoryIcons = {
+      'Core Guides': 'file',
+      'Detailed Chapters': 'file',
+      'Verification Checklists': 'file',
+      'Operational Templates': 'folder',
+      'Practical Examples': 'folder'
+    };
+
+    // DOM Elements
+    const sidebarNavContainer = document.getElementById('sidebar-nav-container');
+    const documentContent = document.getElementById('document-content');
+    const dashboardView = document.getElementById('dashboard-view');
+    const searchResults = document.getElementById('search-results');
+    const searchResultsList = document.getElementById('search-results-list');
+    const searchInput = document.getElementById('search-input');
+    const tocList = document.getElementById('toc-list');
+    const breadcrumbs = document.getElementById('breadcrumbs');
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menu-toggle');
+    const dashboardNavBtn = document.getElementById('dashboard-nav-btn');
+
+    // Clipboard copy helper
+    function copyToClipboard(btn) {
+      const pre = btn.closest('pre');
+      const code = pre.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.innerHTML = SVGS.check;
+        setTimeout(() => {
+          btn.innerHTML = SVGS.copy;
+        }, 2000);
+      });
+    }
+
+    // Path normalization helper for links
+    function resolveRelativePath(basePath, relativePath) {
+      if (relativePath.startsWith('http') || relativePath.startsWith('#')) {
+        return relativePath;
+      }
+      const baseParts = basePath.split('/');
+      baseParts.pop(); // remove filename
+      const relParts = relativePath.split('/');
+      for (const part of relParts) {
+        if (part === '.') {
+          continue;
+        } else if (part === '..') {
+          if (baseParts.length > 0) baseParts.pop();
+        } else {
+          baseParts.push(part);
+        }
+      }
+      return baseParts.join('/');
+    }
+
+    function resolveDocId(href) {
+      const currentDoc = docs.find(d => d.id === currentDocId);
+      if (!currentDoc) return null;
+      
+      const resolvedPath = resolveRelativePath(currentDoc.path, href);
+      if (pathMap[resolvedPath]) {
+        return pathMap[resolvedPath];
+      }
+      let cleanPath = href.replace(/^(\.\.\/|\.\/)+/, '');
+      if (pathMap[cleanPath]) {
+        return pathMap[cleanPath];
+      }
+      const base = cleanPath.split('/').pop();
+      if (pathMap[base]) {
+        return pathMap[base];
+      }
+      return null;
+    }
+
+    // Search Diacritic remover for Vietnamese search
+    function removeDiacritics(str) {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
+
+    // Custom GitHub-style Alert Parser
+    function parseAlerts(html) {
+      const alertClasses = {
+        'NOTE': 'alert-note',
+        'TIP': 'alert-tip',
+        'IMPORTANT': 'alert-important',
+        'WARNING': 'alert-warning',
+        'CAUTION': 'alert-caution'
+      };
+      const alertTitles = {
+        'NOTE': 'Lưu ý',
+        'TIP': 'Gợi ý',
+        'IMPORTANT': 'Quan trọng',
+        'WARNING': 'Cảnh báo',
+        'CAUTION': 'Thận trọng'
+      };
+      const alertIcons = {
+        'NOTE': `<span class="icon-wrapper" style="margin-right: 8px; color: #0066cc; width:16px; height:16px; display:inline-block; vertical-align:middle;">${SVGS.chevronRight}</span>`,
+        'TIP': `<span class="icon-wrapper" style="margin-right: 8px; color: #34c759; width:16px; height:16px; display:inline-block; vertical-align:middle;">${SVGS.check}</span>`,
+        'IMPORTANT': `<span class="icon-wrapper" style="margin-right: 8px; color: #af52de; width:16px; height:16px; display:inline-block; vertical-align:middle;">${SVGS.chevronRight}</span>`,
+        'WARNING': `<span class="icon-wrapper" style="margin-right: 8px; color: #ff9500; width:16px; height:16px; display:inline-block; vertical-align:middle;">${SVGS.chevronRight}</span>`,
+        'CAUTION': `<span class="icon-wrapper" style="margin-right: 8px; color: #ff3b30; width:16px; height:16px; display:inline-block; vertical-align:middle;">${SVGS.chevronRight}</span>`
+      };
+      
+      return html.replace(/<blockquote>\s*<p>\s*\\?\[\!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*(?:<br\s*\/?>)?([\s\S]*?)<\/p>\s*<\/blockquote>/gi, (match, type, content) => {
+        type = type.toUpperCase();
+        return `<div class="custom-alert ${alertClasses[type]}">
+          <div class="custom-alert-header">
+            ${alertIcons[type]}
+            <span class="custom-alert-title">${alertTitles[type]}</span>
+          </div>
+          <div class="custom-alert-content">${content}</div>
+        </div>`;
+      });
+    }
+
+    // Unicode-aware header slugify matching GitHub behavior
+    function githubSlugify(text) {
+      if (!text) return "";
+      let slug = text.toLowerCase().trim();
+      slug = slug.replace(/[\*\_`]/g, '');
+      // Unicode flag 'u' allows \p{L} for letters, \p{N} for numbers
+      slug = slug.replace(/[^\p{L}\p{N}\-_\s]/gu, '');
+      slug = slug.replace(/\s+/g, '-');
+      slug = slug.replace(/^-+|-+$/g, '');
+      return slug;
+    }
+
+    // Build sidebar navigation dynamically with tree folders
+    function renderSidebar() {
+      const categories = ['Core Guides', 'Detailed Chapters', 'Verification Checklists', 'Operational Templates', 'Practical Examples'];
+      let navHtml = "";
+      
+      categories.forEach(category => {
+        const categoryDocs = docs.filter(doc => doc.category === category);
+        if (categoryDocs.length === 0) return;
+        
+        const iconName = categoryIcons[category] || 'folder';
+        
+        navHtml += `
+          <div class="nav-category">
+            <div class="category-title">
+              <span>${category}</span>
+              ${getIcon(iconName, 'width: 12px; height: 12px;')}
+            </div>
+            <ul class="nav-list">
+        `;
+        
+        // Group category docs by subcategory
+        const subcategories = {};
+        const flatDocs = [];
+        
+        categoryDocs.forEach(doc => {
+          if (doc.subcategory) {
+            if (!subcategories[doc.subcategory]) {
+              subcategories[doc.subcategory] = [];
+            }
+            subcategories[doc.subcategory].push(doc);
+          } else {
+            flatDocs.push(doc);
+          }
+        });
+        
+        // Render flat files first
+        flatDocs.forEach(doc => {
+          navHtml += `
+            <li>
+              <button class="nav-item-btn" data-id="${doc.id}" onclick="navigateTo('${doc.id}')">
+                ${getIcon('file', 'width: 14px; height: 14px; color: var(--text-secondary);')}
+                <span class="nav-text" title="${doc.title}">${doc.title}</span>
+              </button>
+            </li>
+          `;
+        });
+        
+        // Render subfolders (subcategories)
+        for (const subcat in subcategories) {
+          const subcatDocs = subcategories[subcat];
+          const subcatId = `${category.toLowerCase().replace(/ /g, '-')}-${subcat.toLowerCase().replace(/ /g, '-')}`;
+          
+          navHtml += `
+            <li class="subcategory-wrapper">
+              <button class="nav-subcat-btn" onclick="toggleSubcategory('${subcatId}')">
+                <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+                  <span class="subcat-arrow icon-wrapper" id="arrow-${subcatId}" style="width: 14px; height: 14px; transition: transform 0.2s; flex-shrink: 0; display:flex; align-items:center; justify-content:center;">${SVGS.chevronRight}</span>
+                  <span class="subcat-icon icon-wrapper" style="width: 14px; height: 14px; color: var(--text-secondary); flex-shrink: 0; display:flex; align-items:center; justify-content:center;">${SVGS.folder}</span>
+                  <span class="nav-text" style="font-weight: 600; font-size: 12.5px;">${subcat.toUpperCase()}</span>
+                </div>
+                <span class="subcat-count">${subcatDocs.length}</span>
+              </button>
+              <ul class="subcat-list" id="list-${subcatId}" style="display: none;">
+          `;
+          
+          subcatDocs.forEach(doc => {
+            navHtml += `
+              <li>
+                <button class="nav-item-btn indent" data-id="${doc.id}" onclick="navigateTo('${doc.id}')">
+                  ${getIcon('file', 'width: 13px; height: 13px; color: var(--text-secondary);')}
+                  <span class="nav-text" title="${doc.title}">${doc.title}</span>
+                </button>
+              </li>
+            `;
+          });
+          
+          navHtml += `
+              </ul>
+            </li>
+          `;
+        }
+        
+        navHtml += `
+            </ul>
+          </div>
+        `;
+      });
+      
+      sidebarNavContainer.innerHTML = navHtml;
+      
+      if (currentDocId && currentDocId !== 'dashboard') {
+        expandSubcategoryOfDoc(currentDocId);
+      }
+    }
+
+    // Toggle subfolders fold open/close
+    function toggleSubcategory(subcatId) {
+      const list = document.getElementById(`list-${subcatId}`);
+      const arrow = document.getElementById(`arrow-${subcatId}`);
+      if (list.style.display === 'none') {
+        list.style.display = 'block';
+        arrow.style.transform = 'rotate(90deg)';
+      } else {
+        list.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+      }
+    }
+
+    // Expand subfolder containing the active doc
+    function expandSubcategoryOfDoc(docId) {
+      const doc = docs.find(d => d.id === docId);
+      if (doc && doc.subcategory) {
+        const subcatId = `${doc.category.toLowerCase().replace(/ /g, '-')}-${doc.subcategory.toLowerCase().replace(/ /g, '-')}`;
+        const list = document.getElementById(`list-${subcatId}`);
+        const arrow = document.getElementById(`arrow-${subcatId}`);
+        if (list && list.style.display === 'none') {
+          list.style.display = 'block';
+          arrow.style.transform = 'rotate(90deg)';
+        }
+      }
+    }
+
+    // Load Dashboard cockpit view
+    function loadDashboardView() {
+      currentDocId = "dashboard";
+      document.title = "Cockpit Dashboard — Agentic SDLC OS";
+
+      // Update Navigation State in Sidebar
+      document.querySelectorAll('.nav-item-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      dashboardNavBtn.classList.add('active');
+
+      // Update Breadcrumbs
+      breadcrumbs.innerHTML = `
+        <span>Dashboard</span>
+        <span class="breadcrumb-sep">&gt;</span>
+        <span style="color: var(--text-primary); font-weight: 500;">Quy trình & Bản đồ tài liệu</span>
+      `;
+
+      // Toggle Views visibility
+      documentContent.style.display = 'none';
+      searchResults.style.display = 'none';
+      dashboardView.style.display = 'flex';
+      
+      // Hide TOC in right panel
+      document.getElementById('toc-wrapper').style.display = 'none';
+
+      // Render Dashboard Cockpit Content
+      renderDashboardHTML();
+    }
+
+    // Dynamic Render Dashboard Content
+    function renderDashboardHTML() {
+      const countCore = docs.filter(d => d.category === 'Core Guides').length;
+      const countChapters = docs.filter(d => d.category === 'Detailed Chapters').length;
+      const countChecklists = docs.filter(d => d.category === 'Verification Checklists').length;
+      const countTemplates = docs.filter(d => d.category === 'Operational Templates').length;
+      const countExamples = docs.filter(d => d.category === 'Practical Examples').length;
+
+      let html = `
+        <div class="dashboard-hero">
+          <h1>Hệ Điều Hành Agentic SDLC</h1>
+          <p>Bản đồ hệ thống quy trình phát triển và vận hành phần mềm chất lượng cao với AI Coding Agents & AI nghiệp vụ.</p>
+        </div>
+
+        <div>
+          <div class="dashboard-section-title">
+            ${SVGS.cpu}
+            Hệ thống tài liệu dự án (${docs.length} tài liệu)
+          </div>
+          <div class="card-grid">
+            <div class="metric-card" onclick="navigateTo('readme')">
+              <div class="metric-card-header">
+                <span class="metric-icon" style="width:20px; height:20px; display:inline-block;">${SVGS.file}</span>
+                <span class="metric-count">${countCore}</span>
+              </div>
+              <div class="metric-title">Tài liệu Nền tảng</div>
+              <div class="metric-desc">README, lý thuyết Deep Dive, và visual master maps toàn cảnh.</div>
+            </div>
+            
+            <div class="metric-card" onclick="navigateTo('docs-00-overview')">
+              <div class="metric-card-header">
+                <span class="metric-icon" style="width:20px; height:20px; display:inline-block;">${SVGS.file}</span>
+                <span class="metric-count">${countChapters}</span>
+              </div>
+              <div class="metric-title">Cẩm nang Playbooks</div>
+              <div class="metric-desc">Các hướng dẫn vận hành chi tiết cho doanh nghiệp lớn.</div>
+            </div>
+
+            <div class="metric-card" onclick="navigateTo('checklists-ui-ux')">
+              <div class="metric-card-header">
+                <span class="metric-icon" style="width:20px; height:20px; display:inline-block;">${SVGS.file}</span>
+                <span class="metric-count">${countChecklists}</span>
+              </div>
+              <div class="metric-title">Checklists kiểm duyệt</div>
+              <div class="metric-desc">Cổng kiểm định chất lượng độc lập chốt chặn trước khi release.</div>
+            </div>
+
+            <div class="metric-card" onclick="navigateTo('templates-specs-product-requirement')">
+              <div class="metric-card-header">
+                <span class="metric-icon" style="width:20px; height:20px; display:inline-block;">${SVGS.folder}</span>
+                <span class="metric-count">${countTemplates}</span>
+              </div>
+              <div class="metric-title">Biểu mẫu Templates</div>
+              <div class="metric-desc">Mẫu ADR, Specs, UI Contracts, Module Contracts, và Agent briefs.</div>
+            </div>
+
+            <div class="metric-card" onclick="navigateTo('examples-sample-agents')">
+              <div class="metric-card-header">
+                <span class="metric-icon" style="width:20px; height:20px; display:inline-block;">${SVGS.folder}</span>
+                <span class="metric-count">${countExamples}</span>
+              </div>
+              <div class="metric-title">Ví dụ thực tế</div>
+              <div class="metric-desc">Mẫu code agent chỉ dẫn thực tế và ca tính năng doanh nghiệp hoàn chỉnh.</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="dashboard-section-title">
+            <span style="width:20px; height:20px; display:inline-block; color:var(--accent);">${SVGS.arrowRight}</span>
+            Bản đồ tài liệu theo 8 pha ADLC
+          </div>
+          <div class="phase-timeline-container">
+            <div class="phase-steps-bar">
+      `;
+
+      PHASE_MAPPING.forEach((phase, idx) => {
+        const isActive = idx === activePhaseIdx ? 'active' : '';
+        html += `
+          <button class="phase-step-btn ${isActive}" onclick="selectPhase(${idx})">
+            <span class="phase-number">${idx + 1}</span>
+            <span class="phase-name">${phase.name.split(':')[1].trim()}</span>
+          </button>
+        `;
+      });
+
+      const activePhase = PHASE_MAPPING[activePhaseIdx];
+
+      html += `
+            </div>
+            <div class="phase-content-panel">
+              <div class="phase-panel-header">
+                <div class="phase-panel-title">${activePhase.name}</div>
+                <div class="phase-panel-desc">${activePhase.desc}</div>
+              </div>
+              
+              <div class="phase-links-grid">
+                <div class="phase-links-column">
+                  <div class="column-title" style="color: var(--accent);">${SVGS.file} Cẩm nang & Checklists</div>
+                  <ul class="column-links">
+      `;
+
+      if (activePhase.playbooks.length === 0 && activePhase.checklists.length === 0) {
+        html += `<li class="empty-state-text">Không có tài liệu hướng dẫn cho pha này</li>`;
+      } else {
+        activePhase.playbooks.forEach(pid => {
+          const doc = docs.find(d => d.id === pid);
+          if (doc) {
+            html += `<li><button class="inline-link-btn" onclick="navigateTo('${doc.id}')">${SVGS.chevronRight} ${doc.title}</button></li>`;
+          }
+        });
+        activePhase.checklists.forEach(cid => {
+          const doc = docs.find(d => d.id === cid);
+          if (doc) {
+            html += `<li><button class="inline-link-btn" onclick="navigateTo('${doc.id}')">${SVGS.chevronRight} Checklist: ${doc.title}</button></li>`;
+          }
+        });
+      }
+
+      html += `
+                  </ul>
+                </div>
+                
+                <div class="phase-links-column">
+                  <div class="column-title" style="color: #34c759;">${SVGS.folder} Biểu mẫu & Ví dụ áp dụng</div>
+                  <ul class="column-links">
+      `;
+
+      if (activePhase.templates.length === 0 && activePhase.examples.length === 0) {
+        html += `<li class="empty-state-text">Không có biểu mẫu cho pha này</li>`;
+      } else {
+        activePhase.templates.forEach(tid => {
+          const doc = docs.find(d => d.id === tid);
+          if (doc) {
+            html += `<li><button class="inline-link-btn" onclick="navigateTo('${doc.id}')">${SVGS.chevronRight} Mẫu: ${doc.title}</button></li>`;
+          }
+        });
+        activePhase.examples.forEach(eid => {
+          const doc = docs.find(d => d.id === eid);
+          if (doc) {
+            html += `<li><button class="inline-link-btn" onclick="navigateTo('${doc.id}')">${SVGS.chevronRight} Ví dụ: ${doc.title}</button></li>`;
+          }
+        });
+      }
+
+      html += `
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="dashboard-section-title">
+            <span style="width:20px; height:20px; display:inline-block; color:#34c759;">${SVGS.check}</span>
+            Ma trận giải quyết vấn đề nhanh
+          </div>
+          <div class="decision-helper-container">
+      `;
+
+      DECISION_MATRIX.forEach((item, idx) => {
+        html += `
+          <div class="decision-row" id="decision-${idx}">
+            <button class="decision-header" onclick="toggleDecision(${idx})">
+              <div class="decision-header-left">
+                <span class="decision-title">${item.problem}</span>
+                <span class="decision-subtitle">${item.desc}</span>
+              </div>
+              <span class="decision-arrow">${SVGS.chevronRight}</span>
+            </button>
+            <div class="decision-body">
+              <p style="font-size:13px; color:var(--text-secondary); font-style:italic;">Khi xử lý nghiệp vụ này, bạn hãy xem và sao chép các tài liệu chỉ dẫn chi tiết dưới đây:</p>
+              <div class="decision-resources-grid">
+        `;
+
+        if (item.playbook) {
+          const doc = docs.find(d => d.id === item.playbook);
+          if (doc) {
+            html += `
+              <div class="phase-links-column">
+                <div class="column-title">Playbook Cẩm nang</div>
+                <button class="inline-link-btn" onclick="navigateTo('${doc.id}')">${SVGS.chevronRight} ${doc.title}</button>
+              </div>
+            `;
+          }
+        }
+
+        if (item.checklist) {
+          const doc = docs.find(d => d.id === item.checklist);
+          if (doc) {
+            html += `
+              <div class="phase-links-column">
+                <div class="column-title">Checklist Kiểm duyệt</div>
+                <button class="inline-link-btn" onclick="navigateTo('${doc.id}')">${SVGS.chevronRight} ${doc.title}</button>
+              </div>
+            `;
+          }
+        }
+
+        if (item.templates && item.templates.length > 0) {
+          html += `
+            <div class="phase-links-column" style="grid-column: span 1;">
+              <div class="column-title">Biểu mẫu liên quan</div>
+              <ul class="column-links">
+          `;
+          item.templates.forEach(tid => {
+            const doc = docs.find(d => d.id === tid);
+            if (doc) {
+              html += `<li><button class="inline-link-btn" onclick="navigateTo('${doc.id}')">${SVGS.chevronRight} Mẫu: ${doc.title}</button></li>`;
+            }
+          });
+          html += `</ul></div>`;
+        }
+
+        html += `
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `
+          </div>
+        </div>
+      `;
+
+      dashboardView.innerHTML = html;
+    }
+
+    function selectPhase(idx) {
+      activePhaseIdx = idx;
+      renderDashboardHTML();
+    }
+
+    function toggleDecision(idx) {
+      const row = document.getElementById(`decision-${idx}`);
+      if (row) {
+        row.classList.toggle('open');
+      }
+    }
+
+    // Handle Article Selection
+    async function loadDocument(id, anchor) {
+      const doc = docs.find(d => d.id === id);
+      if (!doc) return;
+      
+      currentDocId = id;
+      document.title = `${doc.title} — Agentic SDLC Portal`;
+
+      // Update Navigation State
+      document.querySelectorAll('.nav-item-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-id') === id);
+      });
+      dashboardNavBtn.classList.remove('active');
+      expandSubcategoryOfDoc(id);
+
+      // Show TOC wrapper
+      document.getElementById('toc-wrapper').style.display = 'block';
+
+      // Update Breadcrumbs
+      breadcrumbs.innerHTML = `
+        <span>${doc.category}</span>
+        <span class="breadcrumb-sep">&gt;</span>
+        <span style="color: var(--text-primary); font-weight: 500;">${doc.path.split('/').pop()}</span>
+      `;
+
+      // Toggle views visibility
+      dashboardView.style.display = 'none';
+      searchResults.style.display = 'none';
+      documentContent.style.display = 'block';
+
+      // Parse Markdown to HTML
+      let html = marked.parse(doc.content);
+      
+      // Parse Custom Alerts (GitHub style)
+      html = parseAlerts(html);
+
+      // Render HTML Content
+      documentContent.innerHTML = html;
+
+      // Highlight code blocks
+      Prism.highlightAllUnder(documentContent);
+
+      // Render Mermaid Diagrams
+      try {
+        await mermaid.run({
+          querySelector: '.mermaid'
+        });
+      } catch (err) {
+        console.error("Mermaid parsing error:", err);
+      }
+
+      // Build Table of Contents
+      buildTOC();
+
+      // Intercept and resolve cross links inside documentContent
+      documentContent.querySelectorAll('a').forEach(a => {
+        const href = a.getAttribute('href');
+        if (href && !href.startsWith('http') && !href.startsWith('#')) {
+          const mdLinkRegex = /^([^?#]+\.md)(?:#([^#]+))?$/;
+          const match = href.match(mdLinkRegex);
+          if (match) {
+            const filePath = match[1];
+            const linkAnchor = match[2] || '';
+            const resolved = resolveDocId(filePath);
+            if (resolved) {
+              const hashNav = `${resolved}` + (linkAnchor ? `:${linkAnchor}` : '');
+              a.setAttribute('href', `#${hashNav}`);
+              a.onclick = function(e) {
+                e.preventDefault();
+                navigateTo(resolved, linkAnchor);
+              };
+            }
+          }
+        }
+      });
+
+      // Handle scrolling to anchor or resetting scroll
+      if (anchor) {
+        setTimeout(() => {
+          const targetEl = document.getElementById(anchor);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            // Check if there is an element with matching slugified ID
+            const slugAnchor = githubSlugify(anchor);
+            const targetElSlug = document.getElementById(slugAnchor);
+            if (targetElSlug) {
+              targetElSlug.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+              document.getElementById('content-container').scrollTop = 0;
+            }
+          }
+        }, 150);
+      } else {
+        document.getElementById('content-container').scrollTop = 0;
+      }
+    }
+
+    // Dynamic TOC builder
+    function buildTOC() {
+      const headings = documentContent.querySelectorAll('h2, h3');
+      if (headings.length === 0) {
+        tocList.innerHTML = '<li><span class="toc-link" style="color: var(--text-secondary); cursor: default;">Không có mục lục</span></li>';
+        return;
+      }
+
+      let tocHtml = "";
+      headings.forEach((heading) => {
+        const text = heading.textContent;
+        const tag = heading.tagName.toLowerCase();
+        
+        // Use standard slugification rules to generate valid DOM IDs
+        const headingId = githubSlugify(text);
+        heading.setAttribute('id', headingId);
+
+        tocHtml += `
+          <li>
+            <a class="toc-link ${tag === 'h3' ? 'indent-h3' : ''}" data-target="${headingId}" onclick="scrollToHeading('${headingId}')">
+              ${text}
+            </a>
+          </li>
+        `;
+      });
+      
+      tocList.innerHTML = tocHtml;
+      setupTOCScrollSpy();
+    }
+
+    function scrollToHeading(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function setupTOCScrollSpy() {
+      const headings = Array.from(documentContent.querySelectorAll('h2, h3'));
+      const tocLinks = Array.from(document.querySelectorAll('.toc-link'));
+      const container = document.getElementById('content-container');
+      
+      container.onscroll = () => {
+        let activeId = "";
+        const scrollPos = container.scrollTop + 100;
+        
+        for (const heading of headings) {
+          if (heading.offsetTop <= scrollPos) {
+            activeId = heading.getAttribute('id');
+          } else {
+            break;
+          }
+        }
+        
+        tocLinks.forEach(link => {
+          const target = link.getAttribute('data-target');
+          link.classList.toggle('active', target === activeId);
+        });
+      };
+    }
+
+    // Dynamic Navigation Routing
+    function navigateTo(id, anchor) {
+      if (id === 'dashboard') {
+        window.location.hash = 'dashboard';
+        return;
+      }
+      const hash = id + (anchor ? `:${anchor}` : '');
+      window.location.hash = hash;
+      sidebar.classList.remove('open');
+    }
+
+    // Helper to parse dynamic route parameters from hash (docId:anchor)
+    function parseHash(hashStr) {
+      const parts = hashStr.split(':');
+      return {
+        docId: parts[0] || '',
+        anchor: parts[1] || ''
+      };
+    }
+
+    // Full-text Local Search Engine (Vietnamese accent-insensitive)
+    function executeSearch(query) {
+      if (!query.trim()) {
+        if (currentDocId === 'dashboard') {
+          loadDashboardView();
+        } else if (currentDocId) {
+          loadDocument(currentDocId);
+        }
+        return;
+      }
+
+      documentContent.style.display = 'none';
+      dashboardView.style.display = 'none';
+      document.getElementById('toc-wrapper').style.display = 'none';
+      searchResults.style.display = 'flex';
+      
+      breadcrumbs.innerHTML = `
+        <span>Tìm kiếm</span>
+        <span class="breadcrumb-sep">&gt;</span>
+        <span style="color: var(--text-primary); font-weight: 500;">"${query}"</span>
+      `;
+
+      const normalizedQuery = removeDiacritics(query);
+      const results = [];
+
+      docs.forEach(doc => {
+        const titleMatch = removeDiacritics(doc.title).includes(normalizedQuery);
+        const contentNorm = removeDiacritics(doc.content);
+        const queryIndex = contentNorm.indexOf(normalizedQuery);
+        
+        if (titleMatch || queryIndex !== -1) {
+          let snippet = "";
+          
+          if (queryIndex !== -1) {
+            const start = Math.max(0, queryIndex - 60);
+            const end = Math.min(doc.content.length, queryIndex + normalizedQuery.length + 100);
+            let rawSnippet = doc.content.substring(start, end);
+            
+            const searchPattern = new RegExp(`(${query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, 'gi');
+            snippet = rawSnippet.replace(searchPattern, '<span class="highlight">$1</span>');
+            snippet = (start > 0 ? '...' : '') + snippet + (end < doc.content.length ? '...' : '');
+          } else {
+            snippet = doc.content.substring(0, 160) + '...';
+          }
+
+          results.push({
+            id: doc.id,
+            title: doc.title,
+            path: doc.path,
+            snippet: snippet
+          });
+        }
+      });
+
+      if (results.length === 0) {
+        searchResultsList.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+          <span style="width: 48px; height: 48px; display: inline-block; margin-bottom: 12px; color: var(--text-secondary);">${SVGS.frown}</span>
+          <p>Không tìm thấy kết quả nào phù hợp với từ khóa.</p>
+        </div>`;
+      } else {
+        let listHtml = "";
+        results.forEach(res => {
+          listHtml += `
+            <div class="search-result-item" onclick="navigateTo('${res.id}'); document.getElementById('search-input').value = '';">
+              <div class="search-result-title">${res.title}</div>
+              <div class="search-result-snippet">${res.snippet}</div>
+              <div class="search-result-path">${res.path}</div>
+            </div>
+          `;
+        });
+        searchResultsList.innerHTML = listHtml;
+      }
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('input', (e) => {
+      executeSearch(e.target.value);
+    });
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    // Close sidebar on mobile when clicking outside
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 768) {
+        if (!sidebar.contains(e.target) && !menuToggle.contains(e.target) && sidebar.classList.contains('open')) {
+          sidebar.classList.remove('open');
+        }
+      }
+    });
+
+    // Handle Hash Navigation (browser history)
+    window.addEventListener('hashchange', () => {
+      const hashStr = window.location.hash.substring(1);
+      if (hashStr === 'dashboard' || !hashStr) {
+        loadDashboardView();
+      } else {
+        const { docId, anchor } = parseHash(hashStr);
+        if (docId) {
+          loadDocument(docId, anchor);
+        }
+      }
+    });
+
+    // On Load Initial Setup
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSidebar();
+      
+      const hashStr = window.location.hash.substring(1);
+      if (hashStr && hashStr !== 'dashboard') {
+        const { docId, anchor } = parseHash(hashStr);
+        if (docId && docs.some(d => d.id === docId)) {
+          loadDocument(docId, anchor);
+          return;
+        }
+      }
+      
+      // Default load Cockpit Dashboard
+      loadDashboardView();
+    });
+
+  </script>
+</body>
+</html>
